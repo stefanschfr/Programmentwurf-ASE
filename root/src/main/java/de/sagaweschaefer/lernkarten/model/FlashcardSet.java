@@ -3,19 +3,19 @@ package src.main.java.de.sagaweschaefer.lernkarten.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LernkartenSet {
+public class FlashcardSet {
 
     private String name;
-    private List<Lernkarte> karten;
+    private List<Flashcard> flashcardSet;
 
     // Standard-Konstruktor (z.B. für JSON)
-    public LernkartenSet() {
-        this.karten = new ArrayList<>();
+    public FlashcardSet() {
+        this.flashcardSet = new ArrayList<>();
     }
 
     // Konstruktor mit Namen
-    public LernkartenSet(String name) {
+    public FlashcardSet(String name) {
         this.name = name;
-        this.karten = new ArrayList<>();
+        this.flashcardSet = new ArrayList<>();
     }
 }
