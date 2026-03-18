@@ -18,4 +18,8 @@ public class FlashcardSet {
         this.name = name;
         this.flashcardSet = new ArrayList<>();
     }
+
+    public String getName() {
+        return name;
+    }
 }
