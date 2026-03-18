@@ -1,4 +1,4 @@
-package src.main.java.de.sagaweschaefer.lernkarten.model;
+package src.main.java.de.sagaweschaefer.flashcard.model;
 
 public enum QuestionType {
     FREE_TEXT,        // Der Nutzer gibt einen Text als Antwort ein

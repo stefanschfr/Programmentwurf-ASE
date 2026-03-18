@@ -1,4 +1,4 @@
-package src.main.java.de.sagaweschaefer.lernkarten.model;
+package src.main.java.de.sagaweschaefer.flashcard.model;
 
 import java.util.ArrayList;
 import java.util.List;

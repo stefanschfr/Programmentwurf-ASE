@@ -1,6 +1,6 @@
-package src.main.java.de.sagaweschaefer.lernkarten;
+package src.main.java.de.sagaweschaefer.flashcard;
 
-import src.main.java.de.sagaweschaefer.lernkarten.model.FlashcardSet;
+import src.main.java.de.sagaweschaefer.flashcard.model.FlashcardSet;
 
 import java.util.Scanner;
 
