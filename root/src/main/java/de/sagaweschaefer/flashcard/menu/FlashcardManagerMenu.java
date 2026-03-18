@@ -2,6 +2,7 @@ package src.main.java.de.sagaweschaefer.flashcard.menu;
 
 import src.main.java.de.sagaweschaefer.flashcard.FlashcardManager;
 import src.main.java.de.sagaweschaefer.flashcard.util.AppScanner;
+import src.main.java.de.sagaweschaefer.flashcard.util.MenuUtils;
 
 public class FlashcardManagerMenu extends Menu {
 
@@ -12,6 +13,7 @@ public class FlashcardManagerMenu extends Menu {
         System.out.println("\n=== Flashcard Manager ===");
         System.out.println("1. Neues Lernkarten-Set erstellen");
         System.out.println("2. Alle Lernkarten-Sets anzeigen");
+        System.out.println("3. Lernkartenset löschen");
         System.out.println("0. Zurück zum Hauptmenü");
         System.out.print("Bitte wählen Sie eine Option: ");
     }
@@ -28,6 +30,17 @@ public class FlashcardManagerMenu extends Menu {
             }
             case 2 -> {
                 flashcardManager.listFlashcardSets();
+                yield true;
+            }
+            case 3 -> {
+                flashcardManager.listFlashcardSets();
+                if (flashcardManager.getFlashcardSets().isEmpty()) yield true;
+
+                System.out.print("Geben Sie die Nummer des Sets ein, das gelöscht werden soll: ");
+                int choice = MenuUtils.readMenuSelection() - 1; // Liste beginnt bei 1
+                if (!flashcardManager.deleteFlashcardSet(choice)) {
+                    System.out.println("Ungültige Auswahl! Kein Set gelöscht.");
+                }
                 yield true;
             }
             default -> {

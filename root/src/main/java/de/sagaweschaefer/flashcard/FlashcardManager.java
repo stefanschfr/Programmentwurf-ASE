@@ -24,4 +24,17 @@ public class FlashcardManager {
             }
         }
     }
+
+    public boolean deleteFlashcardSet(int index) {
+        if (index < 0 || index >= flashcardSets.size()) {
+            return false; // Ungültiger Index
+        }
+        FlashcardSet removed = flashcardSets.remove(index);
+        System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
+        return true;
+    }
+
+    public List<FlashcardSet> getFlashcardSets() {
+        return flashcardSets;
+    }
 }
