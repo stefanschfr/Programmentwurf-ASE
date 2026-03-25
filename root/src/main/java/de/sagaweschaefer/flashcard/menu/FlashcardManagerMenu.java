@@ -1,41 +1,23 @@
 package src.main.java.de.sagaweschaefer.flashcard.menu;
 
-public class FlashcardManagerMenu extends Menu {
+public class FlashcardManagerMenu {
+    private final Menu menu;
     private final FlashcardManagerMenuHelper flashcardManagerMenuHelper;
 
     public FlashcardManagerMenu(FlashcardManagerMenuHelper flashcardManagerMenuHelper) {
         this.flashcardManagerMenuHelper = flashcardManagerMenuHelper;
+        this.menu = new Menu("Flashcard Manager für Set: " + flashcardManagerMenuHelper.getFlashcardSet().getName());
+        setupMenu();
     }
 
-    @Override
-    protected void showMenu() {
-        System.out.println("\n=== Flashcard Manager für Set: " + flashcardManagerMenuHelper.getFlashcardSet().getName() + " ===");
-        System.out.println("1. Neue Frage hinzufügen");
-        System.out.println("2. Alle Fragen anzeigen");
-        System.out.println("3. Frage löschen");
-        System.out.println("0. Zurück");
+    private void setupMenu() {
+        menu.addItem(1, new MenuItem("Neue Frage hinzufügen", flashcardManagerMenuHelper::addFlashcard));
+        menu.addItem(2, new MenuItem("Alle Fragen anzeigen", flashcardManagerMenuHelper::listFlashcards));
+        menu.addItem(3, new MenuItem("Frage löschen", flashcardManagerMenuHelper::deleteFlashcard));
+        menu.addItem(0, new MenuItem("Zurück", () -> {}, true));
     }
 
-    @Override
-    protected boolean handleSelection(int selection) {
-        return switch (selection) {
-            case 0 -> false;
-            case 1 -> {
-                flashcardManagerMenuHelper.addFlashcard();
-                yield true;
-            }
-            case 2 -> {
-                flashcardManagerMenuHelper.listFlashcards();
-                yield true;
-            }
-            case 3 -> {
-                flashcardManagerMenuHelper.deleteFlashcard();
-                yield true;
-            }
-            default -> {
-                System.out.println("Ungültige Eingabe!");
-                yield true;
-            }
-        };
+    public void start() {
+        menu.start();
     }
 }

@@ -1,35 +1,24 @@
 package src.main.java.de.sagaweschaefer.flashcard.menu;
 
 import src.main.java.de.sagaweschaefer.flashcard.util.AppScanner;
-import src.main.java.de.sagaweschaefer.flashcard.util.MenuUtils;
 
-public class MainMenu extends Menu {
+public class MainMenu {
 
-    private FlashcardSetManagerMenu flashcardSetManagerMenu = new FlashcardSetManagerMenu();
+    private final Menu menu;
+    private final FlashcardSetManagerMenu flashcardSetManagerMenu = new FlashcardSetManagerMenu();
 
-    @Override
-    protected void showMenu() {
-        System.out.println("\n=== Hauptmenü ===");
-        System.out.println("1. Flashcard Set Manager öffnen");
-        System.out.println("0. Programm beenden");
+    public MainMenu() {
+        this.menu = new Menu("Hauptmenü");
+        setupMenu();
     }
 
-    @Override
-    protected boolean handleSelection(int selection) {
-        return switch (selection) {
-            case 0 -> {
-                System.out.println("Programm wird beendet. Auf Wiedersehen!");
-                yield false;
-            }
-            case 1 -> {
-                flashcardSetManagerMenu.start();
-                yield true;
-            }
-            default -> {
-                System.out.println("Ungültige Eingabe! Bitte wählen Sie eine verfügbare Option.");
-                yield true;
-            }
-        };
+    private void setupMenu() {
+        menu.addItem(1, new MenuItem("Flashcard Set Manager öffnen", flashcardSetManagerMenu::start));
+        menu.addItem(0, new MenuItem("Programm beenden", () -> System.out.println("Programm wird beendet. Auf Wiedersehen!"), true));
+    }
+
+    public void start() {
+        menu.start();
     }
 
     public static void main(String[] args) {
