@@ -2,6 +2,7 @@ package src.main.java.de.sagaweschaefer.flashcard.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 public class Flashcard implements Serializable {
 
@@ -82,5 +83,22 @@ public class Flashcard implements Serializable {
 
     public void setOptions(List<String> options) {
         this.options = options;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Flashcard flashcard = (Flashcard) o;
+        return Objects.equals(question, flashcard.question) &&
+                questionType == flashcard.questionType &&
+                Objects.equals(answerText, flashcard.answerText) &&
+                Objects.equals(answerNum, flashcard.answerNum) &&
+                Objects.equals(options, flashcard.options);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(question, questionType, answerText, answerNum, options);
     }
 }

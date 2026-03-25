@@ -14,6 +14,7 @@ public class FlashcardSessionMenu {
 
     private void setupMenu() {
         menu.addItem(1, new MenuItem("Neue Lernsession starten", helper::startSession));
+        menu.addItem(2, new MenuItem("Session mit falsch beantworteten Fragen starten", helper::startWrongAnswersSession));
         menu.addItem(0, new MenuItem("Zurück zum Hauptmenü", () -> {}, true));
     }
 

@@ -29,10 +29,20 @@ public class FlashcardSessionMenuHelper {
 
         if (choice >= 0 && choice < flashcardSets.size()) {
             FlashcardSet set = flashcardSets.get(choice);
-            runSession(set);
+            runSession(set.getFlashcardSet(), set.getName(), false);
         } else {
             System.out.println("Ungültige Auswahl.");
         }
+    }
+
+    public void startWrongAnswersSession() {
+        List<Flashcard> wrongAnswers = storage.loadWrongAnswers();
+        if (wrongAnswers.isEmpty()) {
+            System.out.println("Es sind keine falsch beantworteten Fragen gespeichert.");
+            return;
+        }
+
+        runSession(wrongAnswers, "Falsch beantwortete Fragen", true);
     }
 
     private void listSets() {
@@ -42,24 +52,41 @@ public class FlashcardSessionMenuHelper {
         }
     }
 
-    private void runSession(FlashcardSet set) {
-        List<Flashcard> cards = new ArrayList<>(set.getFlashcardSet());
+    private void runSession(List<Flashcard> cardsToUse, String sessionName, boolean isWrongAnswersMode) {
+        List<Flashcard> cards = new ArrayList<>(cardsToUse);
         if (cards.isEmpty()) {
-            System.out.println("Dieses Set enthält keine Karten.");
+            System.out.println("Keine Karten zum Lernen verfügbar.");
             return;
         }
 
         Collections.shuffle(cards);
         int correctCount = 0;
+        List<Flashcard> currentWrongAnswers = storage.loadWrongAnswers();
+        boolean changed = false;
 
-        System.out.println("\n--- Session gestartet: " + set.getName() + " ---");
+        System.out.println("\n--- Session gestartet: " + sessionName + " ---");
         for (Flashcard card : cards) {
             if (askQuestion(card)) {
                 System.out.println("Richtig!");
                 correctCount++;
+                if (isWrongAnswersMode) {
+                    if (currentWrongAnswers.remove(card)) {
+                        changed = true;
+                    }
+                }
             } else {
                 System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
+                if (!isWrongAnswersMode) {
+                    if (!currentWrongAnswers.contains(card)) {
+                        currentWrongAnswers.add(card);
+                        changed = true;
+                    }
+                }
             }
+        }
+
+        if (changed) {
+            storage.saveWrongAnswers(currentWrongAnswers);
         }
 
         System.out.println("\n--- Session beendet ---");
