@@ -13,7 +13,8 @@ public class FlashcardSetManagerMenu extends Menu {
         System.out.println("\n=== Flashcard Set Manager ===");
         System.out.println("1. Neues Lernkarten-Set erstellen");
         System.out.println("2. Alle Lernkarten-Sets anzeigen");
-        System.out.println("3. Lernkartenset löschen");
+        System.out.println("3. Lernkartenset bearbeiten");
+        System.out.println("4. Lernkartenset löschen");
         System.out.println("0. Zurück zum Hauptmenü");
         System.out.print("Bitte wählen Sie eine Option: ");
     }
@@ -33,6 +34,21 @@ public class FlashcardSetManagerMenu extends Menu {
                 yield true;
             }
             case 3 -> {
+                flashcardSetManager.listFlashcardSets();
+                if (flashcardSetManager.getFlashcardSets().isEmpty()) yield true;
+
+                System.out.print("Geben Sie die Nummer des Sets ein, das bearbeitet werden soll: ");
+                int choice = MenuUtils.readMenuSelection() - 1;
+                if (choice >= 0 && choice < flashcardSetManager.getFlashcardSets().size()) {
+                    var set = flashcardSetManager.getFlashcardSets().get(choice);
+                    var flashcardManager = new src.main.java.de.sagaweschaefer.flashcard.FlashcardManager(set, flashcardSetManager.getFlashcardSets());
+                    new FlashcardManagerMenu(flashcardManager).start();
+                } else {
+                    System.out.println("Ungültige Auswahl!");
+                }
+                yield true;
+            }
+            case 4 -> {
                 flashcardSetManager.listFlashcardSets();
                 if (flashcardSetManager.getFlashcardSets().isEmpty()) yield true;
 
