@@ -1,5 +1,7 @@
-package src.main.java.de.sagaweschaefer.flashcard.menu;
+package src.main.java.de.sagaweschaefer.flashcard.menu.flashcardsetmanager;
 
+import src.main.java.de.sagaweschaefer.flashcard.menu.flashcardmanager.FlashcardManagerMenu;
+import src.main.java.de.sagaweschaefer.flashcard.menu.flashcardmanager.FlashcardManagerMenuHelper;
 import src.main.java.de.sagaweschaefer.flashcard.model.FlashcardSet;
 import src.main.java.de.sagaweschaefer.flashcard.util.BinaryStorage;
 import src.main.java.de.sagaweschaefer.flashcard.util.MenuUtils;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlashcardSetManagerMenuHelper {
-    private List<FlashcardSet> flashcardSets = new ArrayList<>();
+    private List<FlashcardSet> flashcardSets;
     private final BinaryStorage storage = new BinaryStorage();
 
     public FlashcardSetManagerMenuHelper() {

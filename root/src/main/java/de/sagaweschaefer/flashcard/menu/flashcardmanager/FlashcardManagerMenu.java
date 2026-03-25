@@ -1,4 +1,7 @@
-package src.main.java.de.sagaweschaefer.flashcard.menu;
+package src.main.java.de.sagaweschaefer.flashcard.menu.flashcardmanager;
+
+import src.main.java.de.sagaweschaefer.flashcard.menu.Menu;
+import src.main.java.de.sagaweschaefer.flashcard.menu.MenuItem;
 
 public class FlashcardManagerMenu {
     private final Menu menu;

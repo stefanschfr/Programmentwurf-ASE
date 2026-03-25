@@ -1,5 +1,6 @@
 package src.main.java.de.sagaweschaefer.flashcard.menu;
 
+import src.main.java.de.sagaweschaefer.flashcard.menu.flashcardsetmanager.FlashcardSetManagerMenu;
 import src.main.java.de.sagaweschaefer.flashcard.util.AppScanner;
 
 public class MainMenu {
