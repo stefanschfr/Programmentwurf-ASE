@@ -38,9 +38,7 @@ public class FlashcardManagerMenu extends Menu {
 
                 System.out.print("Geben Sie die Nummer des Sets ein, das gelöscht werden soll: ");
                 int choice = MenuUtils.readMenuSelection() - 1; // Liste beginnt bei 1
-                if (!flashcardManager.deleteFlashcardSet(choice)) {
-                    System.out.println("Ungültige Auswahl! Kein Set gelöscht.");
-                }
+                flashcardManager.deleteFlashcardSet(choice);
                 yield true;
             }
             default -> {

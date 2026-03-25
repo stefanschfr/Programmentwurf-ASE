@@ -27,6 +27,7 @@ public class FlashcardManager {
 
     public boolean deleteFlashcardSet(int index) {
         if (index < 0 || index >= flashcardSets.size()) {
+            System.out.println("Ungültige Auswahl! Kein Set gelöscht.");
             return false; // Ungültiger Index
         }
         FlashcardSet removed = flashcardSets.remove(index);
