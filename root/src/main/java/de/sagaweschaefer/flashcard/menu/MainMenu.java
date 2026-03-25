@@ -4,12 +4,12 @@ import src.main.java.de.sagaweschaefer.flashcard.util.AppScanner;
 
 public class MainMenu extends Menu {
 
-    private FlashcardManagerMenu flashcardManagerMenu = new FlashcardManagerMenu();
+    private FlashcardSetManagerMenu flashcardSetManagerMenu = new FlashcardSetManagerMenu();
 
     @Override
     protected void showMenu() {
         System.out.println("\n=== Hauptmenü ===");
-        System.out.println("1. Flashcard Manager öffnen");
+        System.out.println("1. Flashcard Set Manager öffnen");
         System.out.println("0. Programm beenden");
         System.out.print("Bitte wählen Sie eine Option: ");
     }
@@ -22,7 +22,7 @@ public class MainMenu extends Menu {
                 yield false;
             }
             case 1 -> {
-                flashcardManagerMenu.start();
+                flashcardSetManagerMenu.start();
                 yield true;
             }
             default -> {

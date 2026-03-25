@@ -6,11 +6,11 @@ import src.main.java.de.sagaweschaefer.flashcard.util.BinaryStorage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlashcardManager {
+public class FlashcardSetManager {
     private List<FlashcardSet> flashcardSets = new ArrayList<>();
     private final BinaryStorage storage = new BinaryStorage();
 
-    public FlashcardManager() {
+    public FlashcardSetManager() {
         this.flashcardSets = storage.loadFlashcardSets();
     }
 
