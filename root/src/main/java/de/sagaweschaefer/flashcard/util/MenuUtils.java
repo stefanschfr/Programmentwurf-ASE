@@ -8,4 +8,14 @@ public class MenuUtils {
             return -1; // Ungültige Eingabe
         }
     }
+
+    public static String promptForString(String prompt) {
+        System.out.print(prompt);
+        return AppScanner.SCANNER.nextLine();
+    }
+
+    public static int promptForInt(String prompt) {
+        System.out.print(prompt);
+        return readMenuSelection();
+    }
 }

@@ -1,6 +1,7 @@
 package src.main.java.de.sagaweschaefer.flashcard.menu;
 
 import src.main.java.de.sagaweschaefer.flashcard.util.AppScanner;
+import src.main.java.de.sagaweschaefer.flashcard.util.MenuUtils;
 
 public class MainMenu extends Menu {
 
@@ -11,7 +12,6 @@ public class MainMenu extends Menu {
         System.out.println("\n=== Hauptmenü ===");
         System.out.println("1. Flashcard Set Manager öffnen");
         System.out.println("0. Programm beenden");
-        System.out.print("Bitte wählen Sie eine Option: ");
     }
 
     @Override

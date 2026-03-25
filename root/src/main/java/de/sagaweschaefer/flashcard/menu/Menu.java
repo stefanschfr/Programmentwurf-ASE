@@ -8,7 +8,7 @@ public abstract class Menu {
         boolean running = true;
         while (running) {
             showMenu();
-            int selection = MenuUtils.readMenuSelection();
+            int selection = MenuUtils.promptForInt("Bitte wählen Sie eine Option: ");
             running = handleSelection(selection);
         }
     }

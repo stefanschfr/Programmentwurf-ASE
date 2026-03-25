@@ -2,6 +2,7 @@ package src.main.java.de.sagaweschaefer.flashcard.menu;
 
 import src.main.java.de.sagaweschaefer.flashcard.model.FlashcardSet;
 import src.main.java.de.sagaweschaefer.flashcard.util.BinaryStorage;
+import src.main.java.de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,8 @@ public class FlashcardSetManagerMenuHelper {
         this.flashcardSets = storage.loadFlashcardSets();
     }
 
-    public void addFlashcardSet(String name) {
+    public void addFlashcardSet() {
+        String name = MenuUtils.promptForString("Name des Lernkartensets: ");
         FlashcardSet set = new FlashcardSet(name);
         flashcardSets.add(set);
         storage.saveFlashcardSets(flashcardSets);
@@ -32,19 +34,32 @@ public class FlashcardSetManagerMenuHelper {
         }
     }
 
-    public boolean deleteFlashcardSet(int index) {
+    public void deleteFlashcardSet() {
+        listFlashcardSets();
+        if (flashcardSets.isEmpty()) return;
+
+        int index = MenuUtils.promptForInt("Geben Sie die Nummer des Sets ein, das gelöscht werden soll: ") - 1;
         if (index < 0 || index >= flashcardSets.size()) {
             System.out.println("Ungültige Auswahl! Kein Set gelöscht.");
-            return false;
+            return;
         }
 
         FlashcardSet removed = flashcardSets.remove(index);
         storage.saveFlashcardSets(flashcardSets);
         System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
-        return true;
     }
 
-    public List<FlashcardSet> getFlashcardSets() {
-        return flashcardSets;
+    public void editFlashcardSet() {
+        listFlashcardSets();
+        if (flashcardSets.isEmpty()) return;
+
+        int choice = MenuUtils.promptForInt("Geben Sie die Nummer des Sets ein, das bearbeitet werden soll: ") - 1;
+        if (choice >= 0 && choice < flashcardSets.size()) {
+            var set = flashcardSets.get(choice);
+            var flashcardManagerHelper = new FlashcardManagerMenuHelper(set, flashcardSets);
+            new FlashcardManagerMenu(flashcardManagerHelper).start();
+        } else {
+            System.out.println("Ungültige Auswahl!");
+        }
     }
 }
