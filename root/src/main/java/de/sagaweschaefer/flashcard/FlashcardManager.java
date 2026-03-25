@@ -1,16 +1,23 @@
 package src.main.java.de.sagaweschaefer.flashcard;
 
 import src.main.java.de.sagaweschaefer.flashcard.model.FlashcardSet;
+import src.main.java.de.sagaweschaefer.flashcard.util.BinaryStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FlashcardManager {
     private List<FlashcardSet> flashcardSets = new ArrayList<>();
+    private final BinaryStorage storage = new BinaryStorage();
+
+    public FlashcardManager() {
+        this.flashcardSets = storage.loadFlashcardSets();
+    }
 
     public void addFlashcardSet(String name) {
         FlashcardSet set = new FlashcardSet(name);
         flashcardSets.add(set);
+        storage.saveFlashcardSets(flashcardSets);
         System.out.println("Lernkartenset '" + set.getName() + "' wurde erfolgreich erstellt!");
     }
 
@@ -28,9 +35,11 @@ public class FlashcardManager {
     public boolean deleteFlashcardSet(int index) {
         if (index < 0 || index >= flashcardSets.size()) {
             System.out.println("Ungültige Auswahl! Kein Set gelöscht.");
-            return false; // Ungültiger Index
+            return false;
         }
+
         FlashcardSet removed = flashcardSets.remove(index);
+        storage.saveFlashcardSets(flashcardSets);
         System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
         return true;
     }
