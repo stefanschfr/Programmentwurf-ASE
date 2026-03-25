@@ -1,6 +1,5 @@
 package src.main.java.de.sagaweschaefer.flashcard.menu;
 
-import src.main.java.de.sagaweschaefer.flashcard.FlashcardManager;
 import src.main.java.de.sagaweschaefer.flashcard.model.Flashcard;
 import src.main.java.de.sagaweschaefer.flashcard.util.AppScanner;
 import src.main.java.de.sagaweschaefer.flashcard.util.MenuUtils;
@@ -9,15 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlashcardManagerMenu extends Menu {
-    private final FlashcardManager flashcardManager;
+    private final FlashcardManagerMenuHelper flashcardManagerMenuHelper;
 
-    public FlashcardManagerMenu(FlashcardManager flashcardManager) {
-        this.flashcardManager = flashcardManager;
+    public FlashcardManagerMenu(FlashcardManagerMenuHelper flashcardManagerMenuHelper) {
+        this.flashcardManagerMenuHelper = flashcardManagerMenuHelper;
     }
 
     @Override
     protected void showMenu() {
-        System.out.println("\n=== Flashcard Manager für Set: " + flashcardManager.getFlashcardSet().getName() + " ===");
+        System.out.println("\n=== Flashcard Manager für Set: " + flashcardManagerMenuHelper.getFlashcardSet().getName() + " ===");
         System.out.println("1. Neue Frage hinzufügen");
         System.out.println("2. Alle Fragen anzeigen");
         System.out.println("3. Frage löschen");
@@ -34,15 +33,15 @@ public class FlashcardManagerMenu extends Menu {
                 yield true;
             }
             case 2 -> {
-                flashcardManager.listFlashcards();
+                flashcardManagerMenuHelper.listFlashcards();
                 yield true;
             }
             case 3 -> {
-                flashcardManager.listFlashcards();
-                if (flashcardManager.getFlashcardSet().getFlashcardSet().isEmpty()) yield true;
+                flashcardManagerMenuHelper.listFlashcards();
+                if (flashcardManagerMenuHelper.getFlashcardSet().getFlashcardSet().isEmpty()) yield true;
                 System.out.print("Geben Sie die Nummer der Frage ein, die gelöscht werden soll: ");
                 int choice = MenuUtils.readMenuSelection() - 1;
-                flashcardManager.deleteFlashcard(choice);
+                flashcardManagerMenuHelper.deleteFlashcard(choice);
                 yield true;
             }
             default -> {
@@ -68,7 +67,7 @@ public class FlashcardManagerMenu extends Menu {
             case 1 -> {
                 System.out.print("Antworttext eingeben: ");
                 String answer = AppScanner.SCANNER.nextLine();
-                flashcardManager.addFlashcard(new Flashcard(question, answer));
+                flashcardManagerMenuHelper.addFlashcard(new Flashcard(question, answer));
             }
             case 2 -> {
                 System.out.print("Korrekte Antwort eingeben: ");
@@ -81,18 +80,18 @@ public class FlashcardManagerMenu extends Menu {
                     System.out.print("Falsche Option " + (i + 1) + ": ");
                     options.add(AppScanner.SCANNER.nextLine());
                 }
-                flashcardManager.addFlashcard(new Flashcard(question, correctAnswer, options));
+                flashcardManagerMenuHelper.addFlashcard(new Flashcard(question, correctAnswer, options));
             }
             case 3 -> {
                 System.out.print("Ist die Aussage wahr? (j/n): ");
                 boolean isTrue = AppScanner.SCANNER.nextLine().equalsIgnoreCase("j");
-                flashcardManager.addFlashcard(new Flashcard(question, isTrue));
+                flashcardManagerMenuHelper.addFlashcard(new Flashcard(question, isTrue));
             }
             case 4 -> {
                 System.out.print("Numerische Antwort eingeben: ");
                 try {
                     double numAnswer = Double.parseDouble(AppScanner.SCANNER.nextLine());
-                    flashcardManager.addFlashcard(new Flashcard(question, numAnswer));
+                    flashcardManagerMenuHelper.addFlashcard(new Flashcard(question, numAnswer));
                 } catch (NumberFormatException e) {
                     System.out.println("Ungültige Zahl! Frage wurde nicht erstellt.");
                 }

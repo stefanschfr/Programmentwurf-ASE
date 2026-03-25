@@ -1,12 +1,11 @@
 package src.main.java.de.sagaweschaefer.flashcard.menu;
 
-import src.main.java.de.sagaweschaefer.flashcard.FlashcardSetManager;
 import src.main.java.de.sagaweschaefer.flashcard.util.AppScanner;
 import src.main.java.de.sagaweschaefer.flashcard.util.MenuUtils;
 
 public class FlashcardSetManagerMenu extends Menu {
 
-    private FlashcardSetManager flashcardSetManager = new FlashcardSetManager();
+    private FlashcardSetManagerMenuHelper flashcardSetManagerMenuHelper = new FlashcardSetManagerMenuHelper();
 
     @Override
     protected void showMenu() {
@@ -26,22 +25,22 @@ public class FlashcardSetManagerMenu extends Menu {
             case 1 -> {
                 System.out.print("Name des Lernkartensets: ");
                 String name = AppScanner.SCANNER.nextLine();
-                flashcardSetManager.addFlashcardSet(name);
+                flashcardSetManagerMenuHelper.addFlashcardSet(name);
                 yield true;
             }
             case 2 -> {
-                flashcardSetManager.listFlashcardSets();
+                flashcardSetManagerMenuHelper.listFlashcardSets();
                 yield true;
             }
             case 3 -> {
-                flashcardSetManager.listFlashcardSets();
-                if (flashcardSetManager.getFlashcardSets().isEmpty()) yield true;
+                flashcardSetManagerMenuHelper.listFlashcardSets();
+                if (flashcardSetManagerMenuHelper.getFlashcardSets().isEmpty()) yield true;
 
                 System.out.print("Geben Sie die Nummer des Sets ein, das bearbeitet werden soll: ");
                 int choice = MenuUtils.readMenuSelection() - 1;
-                if (choice >= 0 && choice < flashcardSetManager.getFlashcardSets().size()) {
-                    var set = flashcardSetManager.getFlashcardSets().get(choice);
-                    var flashcardManager = new src.main.java.de.sagaweschaefer.flashcard.FlashcardManager(set, flashcardSetManager.getFlashcardSets());
+                if (choice >= 0 && choice < flashcardSetManagerMenuHelper.getFlashcardSets().size()) {
+                    var set = flashcardSetManagerMenuHelper.getFlashcardSets().get(choice);
+                    var flashcardManager = new FlashcardManagerMenuHelper(set, flashcardSetManagerMenuHelper.getFlashcardSets());
                     new FlashcardManagerMenu(flashcardManager).start();
                 } else {
                     System.out.println("Ungültige Auswahl!");
@@ -49,12 +48,12 @@ public class FlashcardSetManagerMenu extends Menu {
                 yield true;
             }
             case 4 -> {
-                flashcardSetManager.listFlashcardSets();
-                if (flashcardSetManager.getFlashcardSets().isEmpty()) yield true;
+                flashcardSetManagerMenuHelper.listFlashcardSets();
+                if (flashcardSetManagerMenuHelper.getFlashcardSets().isEmpty()) yield true;
 
                 System.out.print("Geben Sie die Nummer des Sets ein, das gelöscht werden soll: ");
                 int choice = MenuUtils.readMenuSelection() - 1; // Liste beginnt bei 1
-                flashcardSetManager.deleteFlashcardSet(choice);
+                flashcardSetManagerMenuHelper.deleteFlashcardSet(choice);
                 yield true;
             }
             default -> {
