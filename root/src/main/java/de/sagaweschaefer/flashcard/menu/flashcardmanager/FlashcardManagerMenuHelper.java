@@ -25,8 +25,12 @@ public class FlashcardManagerMenuHelper {
         creationMenu.start();
     }
 
-    public void deleteFlashcard() {
+    public void listFlashcards() {
         MenuUtils.displayFlashcards(flashcardSet.getFlashcardSet(), "Fragen in '" + flashcardSet.getName() + "'");
+    }
+
+    public void deleteFlashcard() {
+        listFlashcards();
         if (flashcardSet.getFlashcardSet().isEmpty()) return;
 
         int index = MenuUtils.promptForInt("Geben Sie die Nummer der Frage ein, die gelöscht werden soll: ") - 1;
