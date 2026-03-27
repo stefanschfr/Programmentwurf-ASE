@@ -24,7 +24,7 @@ public class FlashcardSessionMenuHelper {
             return;
         }
 
-        listSets();
+        MenuUtils.displayFlashcardSets(flashcardSets, "Verfügbare Lernkartensets");
         int choice = MenuUtils.promptForInt("Wähle ein Lernkartenset (Nummer): ") - 1;
 
         if (choice >= 0 && choice < flashcardSets.size()) {
@@ -51,7 +51,7 @@ public class FlashcardSessionMenuHelper {
             return;
         }
 
-        listSets();
+        MenuUtils.displayFlashcardSets(flashcardSets, "Verfügbare Lernkartensets");
         int choice = MenuUtils.promptForInt("Wähle ein Lernkartenset für die Prüfung (Nummer): ") - 1;
 
         if (choice >= 0 && choice < flashcardSets.size()) {
@@ -69,13 +69,6 @@ public class FlashcardSessionMenuHelper {
             runExamSession(examCards, set.getName());
         } else {
             System.out.println("Ungültige Auswahl.");
-        }
-    }
-
-    private void listSets() {
-        System.out.println("\n--- Verfügbare Lernkartensets ---");
-        for (int i = 0; i < flashcardSets.size(); i++) {
-            System.out.println((i + 1) + ". " + flashcardSets.get(i).getName());
         }
     }
 
@@ -104,20 +97,13 @@ public class FlashcardSessionMenuHelper {
             } else {
                 System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
                 if (!isWrongAnswersMode) {
-                    if (!currentWrongAnswers.contains(card)) {
-                        currentWrongAnswers.add(card);
-                        changed = true;
-                    }
+                    changed |= updateWrongAnswers(currentWrongAnswers, card);
                 }
             }
         }
 
-        if (changed) {
-            storage.saveWrongAnswers(currentWrongAnswers);
-        }
-
-        System.out.println("\n--- Session beendet ---");
-        System.out.println("Ergebnis: " + correctCount + " von " + cards.size() + " richtig beantwortet.");
+        saveWrongAnswersIfChanged(currentWrongAnswers, changed);
+        displaySessionResult(correctCount, cards.size(), 0);
     }
 
     private void runExamSession(List<Flashcard> examCards, String setName) {
@@ -143,39 +129,56 @@ public class FlashcardSessionMenuHelper {
 
             Flashcard card = examCards.get(i);
             System.out.println("\nFrage " + (i + 1) + " von " + totalQuestions);
-            long remainingMillis = limitMillis - elapsedTime;
-            System.out.println("Verbleibende Zeit: " + (remainingMillis / 60000) + "m " + ((remainingMillis % 60000) / 1000) + "s");
+            System.out.println("Verbleibende Zeit: " + formatTime(limitMillis - elapsedTime));
 
             if (askQuestion(card)) {
                 System.out.println("Richtig!");
                 correctCount++;
             } else {
                 System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
-                if (!currentWrongAnswers.contains(card)) {
-                    currentWrongAnswers.add(card);
-                    changed = true;
-                }
+                changed |= updateWrongAnswers(currentWrongAnswers, card);
             }
             
             // Prüfung nach der Beantwortung, falls die Beantwortung lange gedauert hat
             if (System.currentTimeMillis() - startTime >= limitMillis) {
                 System.out.println("\n!!! ZEIT WÄHREND DER LETZTEN FRAGE ABGELAUFEN !!!");
-                // Die Antwort zählt trotzdem noch, da sie gerade gegeben wurde.
-                // Aber wir brechen die Schleife hier ab.
                 if (i < totalQuestions - 1) {
                     break;
                 }
             }
         }
 
+        saveWrongAnswersIfChanged(currentWrongAnswers, changed);
+        System.out.println("\n--- Prüfung beendet ---");
+        displaySessionResult(correctCount, totalQuestions, System.currentTimeMillis() - startTime);
+    }
+
+    private boolean updateWrongAnswers(List<Flashcard> currentWrongAnswers, Flashcard card) {
+        if (!currentWrongAnswers.contains(card)) {
+            currentWrongAnswers.add(card);
+            return true;
+        }
+        return false;
+    }
+
+    private void saveWrongAnswersIfChanged(List<Flashcard> currentWrongAnswers, boolean changed) {
         if (changed) {
             storage.saveWrongAnswers(currentWrongAnswers);
         }
+    }
 
-        System.out.println("\n--- Prüfung beendet ---");
-        System.out.println("Ergebnis: " + correctCount + " von " + totalQuestions + " richtig beantwortet.");
-        long finalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Benötigte Zeit: " + (finalTime / 60000) + "m " + ((finalTime % 60000) / 1000) + "s");
+    private void displaySessionResult(int correctCount, int totalCount, long durationMillis) {
+        if (durationMillis == 0) {
+            System.out.println("\n--- Session beendet ---");
+        }
+        System.out.println("Ergebnis: " + correctCount + " von " + totalCount + " richtig beantwortet.");
+        if (durationMillis > 0) {
+            System.out.println("Benötigte Zeit: " + formatTime(durationMillis));
+        }
+    }
+
+    private String formatTime(long millis) {
+        return (millis / 60000) + "m " + ((millis % 60000) / 1000) + "s";
     }
 
     private boolean askQuestion(Flashcard card) {

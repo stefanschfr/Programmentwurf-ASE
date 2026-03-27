@@ -26,14 +26,7 @@ public class FlashcardSetManagerMenuHelper {
     }
 
     public void listFlashcardSets() {
-        if (flashcardSets.isEmpty()) {
-            System.out.println("Es wurden noch keine Lernkartensets erstellt.");
-        } else {
-            System.out.println("\n--- Alle Lernkartensets ---");
-            for (int i = 0; i < flashcardSets.size(); i++) {
-                System.out.println((i + 1) + ". " + flashcardSets.get(i).getName());
-            }
-        }
+        MenuUtils.displayFlashcardSets(flashcardSets, "Alle Lernkartensets");
     }
 
     public void deleteFlashcardSet() {
@@ -41,14 +34,20 @@ public class FlashcardSetManagerMenuHelper {
         if (flashcardSets.isEmpty()) return;
 
         int index = MenuUtils.promptForInt("Geben Sie die Nummer des Sets ein, das gelöscht werden soll: ") - 1;
+        if (validateAndPerformDelete(index)) {
+            storage.saveFlashcardSets(flashcardSets);
+        }
+    }
+
+    private boolean validateAndPerformDelete(int index) {
         if (index < 0 || index >= flashcardSets.size()) {
             System.out.println("Ungültige Auswahl! Kein Set gelöscht.");
-            return;
+            return false;
         }
 
         FlashcardSet removed = flashcardSets.remove(index);
-        storage.saveFlashcardSets(flashcardSets);
         System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
+        return true;
     }
 
     public void editFlashcardSet() {

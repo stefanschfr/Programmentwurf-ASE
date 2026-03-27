@@ -25,21 +25,8 @@ public class FlashcardManagerMenuHelper {
         creationMenu.start();
     }
 
-    public void listFlashcards() {
-        List<Flashcard> flashcards = flashcardSet.getFlashcardSet();
-        if (flashcards.isEmpty()) {
-            System.out.println("Dieses Set enthält noch keine Fragen.");
-        } else {
-            System.out.println("\n--- Fragen in '" + flashcardSet.getName() + "' ---");
-            for (int i = 0; i < flashcards.size(); i++) {
-                Flashcard f = flashcards.get(i);
-                System.out.println((i + 1) + ". [" + f.getQuestionType() + "] " + f.getQuestion());
-            }
-        }
-    }
-
     public void deleteFlashcard() {
-        listFlashcards();
+        MenuUtils.displayFlashcards(flashcardSet.getFlashcardSet(), "Fragen in '" + flashcardSet.getName() + "'");
         if (flashcardSet.getFlashcardSet().isEmpty()) return;
 
         int index = MenuUtils.promptForInt("Geben Sie die Nummer der Frage ein, die gelöscht werden soll: ") - 1;
