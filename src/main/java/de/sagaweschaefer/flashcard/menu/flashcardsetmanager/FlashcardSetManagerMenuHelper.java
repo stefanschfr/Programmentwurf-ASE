@@ -17,6 +17,7 @@ public class FlashcardSetManagerMenuHelper {
     }
 
     public void addFlashcardSet() {
+        this.flashcardSets = storage.loadFlashcardSets();
         String name = MenuUtils.promptForString("Name des Lernkartensets: ");
         FlashcardSet set = new FlashcardSet(name);
         flashcardSets.add(set);
@@ -25,10 +26,12 @@ public class FlashcardSetManagerMenuHelper {
     }
 
     public void listFlashcardSets() {
+        this.flashcardSets = storage.loadFlashcardSets();
         MenuUtils.displayFlashcardSets(flashcardSets, "Alle Lernkartensets");
     }
 
     public void deleteFlashcardSet() {
+        this.flashcardSets = storage.loadFlashcardSets();
         listFlashcardSets();
         if (flashcardSets.isEmpty()) return;
 
@@ -50,6 +53,7 @@ public class FlashcardSetManagerMenuHelper {
     }
 
     public void editFlashcardSet() {
+        this.flashcardSets = storage.loadFlashcardSets();
         listFlashcardSets();
         if (flashcardSets.isEmpty()) return;
 

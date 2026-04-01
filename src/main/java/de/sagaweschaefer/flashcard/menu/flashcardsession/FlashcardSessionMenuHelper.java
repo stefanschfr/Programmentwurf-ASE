@@ -11,14 +11,19 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class FlashcardSessionMenuHelper {
-    private final List<FlashcardSet> flashcardSets;
+    private List<FlashcardSet> flashcardSets;
     private final JsonStorage storage = new JsonStorage();
 
     public FlashcardSessionMenuHelper() {
+        refreshFlashcardSets();
+    }
+
+    private void refreshFlashcardSets() {
         this.flashcardSets = storage.loadFlashcardSets();
     }
 
     public void startSession() {
+        refreshFlashcardSets();
         if (flashcardSets.isEmpty()) {
             System.out.println("Es sind keine Lernkartensets verfügbar.");
             return;
@@ -46,6 +51,7 @@ public class FlashcardSessionMenuHelper {
     }
 
     public void startExamMode() {
+        refreshFlashcardSets();
         if (flashcardSets.isEmpty()) {
             System.out.println("Es sind keine Lernkartensets verfügbar.");
             return;
