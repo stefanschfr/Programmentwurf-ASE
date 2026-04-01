@@ -17,7 +17,6 @@ import java.util.Map;
 public class JsonStorage {
 
     private static final String FILE_PATH = "data/flashcard-sets.json";
-    private static final String WRONG_ANSWERS_PATH = "data/wrong-answers.json";
     private static final String STATISTICS_PATH = "data/flashcard-statistics.json";
     private final ObjectMapper objectMapper;
 
@@ -31,9 +30,6 @@ public class JsonStorage {
         saveToFile(FILE_PATH, flashcardSets);
     }
 
-    public void saveWrongAnswers(List<Flashcard> wrongAnswers) {
-        saveToFile(WRONG_ANSWERS_PATH, wrongAnswers);
-    }
 
     public void saveStatistics(Map<String, FlashcardStatistics> statistics) {
         saveToFile(STATISTICS_PATH, statistics);
@@ -67,19 +63,6 @@ public class JsonStorage {
         }
     }
 
-    public List<Flashcard> loadWrongAnswers() {
-        File file = new File(WRONG_ANSWERS_PATH);
-        if (!file.exists()) {
-            return new ArrayList<>();
-        }
-
-        try {
-            return objectMapper.readValue(file, new TypeReference<List<Flashcard>>() {});
-        } catch (IOException e) {
-            System.out.println("Error while loading wrong answers: " + e.getMessage());
-            return new ArrayList<>();
-        }
-    }
 
     public Map<String, FlashcardStatistics> loadStatistics() {
         File file = new File(STATISTICS_PATH);

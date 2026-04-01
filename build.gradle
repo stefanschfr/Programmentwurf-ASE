@@ -20,7 +20,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'de.sagaweschaefer.flashcard.menu.MainMenu'
+    mainClass = project.hasProperty('mainClass') ? project.getProperty('mainClass') : 'de.sagaweschaefer.flashcard.menu.MainMenu'
 }
 run {
     standardInput = System.in

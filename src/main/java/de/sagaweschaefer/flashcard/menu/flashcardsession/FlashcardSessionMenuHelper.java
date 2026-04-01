@@ -36,20 +36,51 @@ public class FlashcardSessionMenuHelper {
 
         if (choice >= 0 && choice < flashcardSets.size()) {
             FlashcardSet set = flashcardSets.get(choice);
-            runSession(set.getFlashcardSet(), set.getName(), false);
+            Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
+            List<Flashcard> cardsToLearn = new ArrayList<>();
+            for (Flashcard card : set.getFlashcardSet()) {
+                FlashcardStatistics stats = statisticsMap.get(card.getId());
+                if (stats == null || stats.getLevel() < 6) {
+                    cardsToLearn.add(card);
+                }
+            }
+            
+            if (cardsToLearn.isEmpty()) {
+                System.out.println("Alle Karten in diesem Set sind bereits vollständig gelernt (Stufe 6)!");
+                return;
+            }
+            
+            runSession(cardsToLearn, set.getName(), false);
         } else {
             System.out.println("Ungültige Auswahl.");
         }
     }
 
     public void startWrongAnswersSession() {
-        List<Flashcard> wrongAnswers = storage.loadWrongAnswers();
-        if (wrongAnswers.isEmpty()) {
-            System.out.println("Es sind keine falsch beantworteten Fragen gespeichert.");
+        refreshFlashcardSets();
+        if (flashcardSets.isEmpty()) {
+            System.out.println("Es sind keine Lernkartensets verfügbar.");
             return;
         }
 
-        runSession(wrongAnswers, "Falsch beantwortete Fragen", true);
+        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
+        List<Flashcard> wrongAnswers = new ArrayList<>();
+
+        for (FlashcardSet set : flashcardSets) {
+            for (Flashcard card : set.getFlashcardSet()) {
+                FlashcardStatistics stats = statisticsMap.get(card.getId());
+                if (stats != null && stats.getLevel() == 0) {
+                    wrongAnswers.add(card);
+                }
+            }
+        }
+
+        if (wrongAnswers.isEmpty()) {
+            System.out.println("Es sind keine falsch beantworteten Fragen (Stufe 0) vorhanden.");
+            return;
+        }
+
+        runSession(wrongAnswers, "Falsch beantwortete Fragen (Stufe 0)", true);
     }
 
     public void startExamMode() {
@@ -89,9 +120,7 @@ public class FlashcardSessionMenuHelper {
 
         Collections.shuffle(cards);
         int correctCount = 0;
-        List<Flashcard> currentWrongAnswers = storage.loadWrongAnswers();
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
-        boolean changed = false;
         boolean statsChanged = false;
 
         System.out.println("\n--- Session gestartet: " + sessionName + " ---");
@@ -102,22 +131,13 @@ public class FlashcardSessionMenuHelper {
                 correctCount++;
                 stats.incrementCorrect();
                 statsChanged = true;
-                if (isWrongAnswersMode) {
-                    if (currentWrongAnswers.remove(card)) {
-                        changed = true;
-                    }
-                }
             } else {
                 System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
                 stats.incrementWrong();
                 statsChanged = true;
-                if (!isWrongAnswersMode) {
-                    changed |= updateWrongAnswers(currentWrongAnswers, card);
-                }
             }
         }
 
-        saveWrongAnswersIfChanged(currentWrongAnswers, changed);
         if (statsChanged) {
             storage.saveStatistics(statisticsMap);
         }
@@ -129,9 +149,7 @@ public class FlashcardSessionMenuHelper {
         long limitMillis = 10 * 60 * 1000; // 10 Minuten
         int correctCount = 0;
         int totalQuestions = examCards.size();
-        List<Flashcard> currentWrongAnswers = storage.loadWrongAnswers();
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
-        boolean changed = false;
         boolean statsChanged = false;
 
         System.out.println("\n--- Prüfung gestartet: " + setName + " ---");
@@ -161,7 +179,6 @@ public class FlashcardSessionMenuHelper {
                 System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
                 stats.incrementWrong();
                 statsChanged = true;
-                changed |= updateWrongAnswers(currentWrongAnswers, card);
             }
             
             // Prüfung nach der Beantwortung, falls die Beantwortung lange gedauert hat
@@ -173,7 +190,6 @@ public class FlashcardSessionMenuHelper {
             }
         }
 
-        saveWrongAnswersIfChanged(currentWrongAnswers, changed);
         if (statsChanged) {
             storage.saveStatistics(statisticsMap);
         }
@@ -181,19 +197,6 @@ public class FlashcardSessionMenuHelper {
         displaySessionResult(correctCount, totalQuestions, System.currentTimeMillis() - startTime);
     }
 
-    private boolean updateWrongAnswers(List<Flashcard> currentWrongAnswers, Flashcard card) {
-        if (!currentWrongAnswers.contains(card)) {
-            currentWrongAnswers.add(card);
-            return true;
-        }
-        return false;
-    }
-
-    private void saveWrongAnswersIfChanged(List<Flashcard> currentWrongAnswers, boolean changed) {
-        if (changed) {
-            storage.saveWrongAnswers(currentWrongAnswers);
-        }
-    }
 
     private void displaySessionResult(int correctCount, int totalCount, long durationMillis) {
         if (durationMillis == 0) {
