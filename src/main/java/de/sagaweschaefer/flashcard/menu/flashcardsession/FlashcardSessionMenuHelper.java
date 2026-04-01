@@ -2,6 +2,7 @@ package de.sagaweschaefer.flashcard.menu.flashcardsession;
 
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
+import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.model.QuestionType;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
@@ -9,6 +10,7 @@ import de.sagaweschaefer.flashcard.util.MenuUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class FlashcardSessionMenuHelper {
     private List<FlashcardSet> flashcardSets;
@@ -88,13 +90,18 @@ public class FlashcardSessionMenuHelper {
         Collections.shuffle(cards);
         int correctCount = 0;
         List<Flashcard> currentWrongAnswers = storage.loadWrongAnswers();
+        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         boolean changed = false;
+        boolean statsChanged = false;
 
         System.out.println("\n--- Session gestartet: " + sessionName + " ---");
         for (Flashcard card : cards) {
+            FlashcardStatistics stats = statisticsMap.computeIfAbsent(card.getId(), FlashcardStatistics::new);
             if (askQuestion(card)) {
                 System.out.println("Richtig!");
                 correctCount++;
+                stats.incrementCorrect();
+                statsChanged = true;
                 if (isWrongAnswersMode) {
                     if (currentWrongAnswers.remove(card)) {
                         changed = true;
@@ -102,6 +109,8 @@ public class FlashcardSessionMenuHelper {
                 }
             } else {
                 System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
+                stats.incrementWrong();
+                statsChanged = true;
                 if (!isWrongAnswersMode) {
                     changed |= updateWrongAnswers(currentWrongAnswers, card);
                 }
@@ -109,6 +118,9 @@ public class FlashcardSessionMenuHelper {
         }
 
         saveWrongAnswersIfChanged(currentWrongAnswers, changed);
+        if (statsChanged) {
+            storage.saveStatistics(statisticsMap);
+        }
         displaySessionResult(correctCount, cards.size(), 0);
     }
 
@@ -118,7 +130,9 @@ public class FlashcardSessionMenuHelper {
         int correctCount = 0;
         int totalQuestions = examCards.size();
         List<Flashcard> currentWrongAnswers = storage.loadWrongAnswers();
+        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         boolean changed = false;
+        boolean statsChanged = false;
 
         System.out.println("\n--- Prüfung gestartet: " + setName + " ---");
         System.out.println("Anzahl Fragen: " + totalQuestions);
@@ -134,14 +148,19 @@ public class FlashcardSessionMenuHelper {
             }
 
             Flashcard card = examCards.get(i);
+            FlashcardStatistics stats = statisticsMap.computeIfAbsent(card.getId(), FlashcardStatistics::new);
             System.out.println("\nFrage " + (i + 1) + " von " + totalQuestions);
             System.out.println("Verbleibende Zeit: " + formatTime(limitMillis - elapsedTime));
 
             if (askQuestion(card)) {
                 System.out.println("Richtig!");
                 correctCount++;
+                stats.incrementCorrect();
+                statsChanged = true;
             } else {
                 System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
+                stats.incrementWrong();
+                statsChanged = true;
                 changed |= updateWrongAnswers(currentWrongAnswers, card);
             }
             
@@ -155,6 +174,9 @@ public class FlashcardSessionMenuHelper {
         }
 
         saveWrongAnswersIfChanged(currentWrongAnswers, changed);
+        if (statsChanged) {
+            storage.saveStatistics(statisticsMap);
+        }
         System.out.println("\n--- Prüfung beendet ---");
         displaySessionResult(correctCount, totalQuestions, System.currentTimeMillis() - startTime);
     }

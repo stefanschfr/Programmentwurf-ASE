@@ -4,10 +4,12 @@ import de.sagaweschaefer.flashcard.menu.flashcardcreation.FlashcardCreationMenu;
 import de.sagaweschaefer.flashcard.menu.flashcardcreation.FlashcardCreationMenuHelper;
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
+import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.List;
+import java.util.Map;
 
 public class FlashcardManagerMenuHelper {
     private final FlashcardSet flashcardSet;
@@ -41,6 +43,13 @@ public class FlashcardManagerMenuHelper {
         }
 
         Flashcard removed = flashcards.remove(index);
+        
+        // Verwaiste Statistiken entfernen
+        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
+        if (statisticsMap.remove(removed.getId()) != null) {
+            storage.saveStatistics(statisticsMap);
+        }
+
         save();
         System.out.println("Frage '" + removed.getQuestion() + "' wurde gelöscht.");
     }

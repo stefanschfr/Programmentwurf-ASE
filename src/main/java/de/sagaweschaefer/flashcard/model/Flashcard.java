@@ -3,21 +3,26 @@ package de.sagaweschaefer.flashcard.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Flashcard implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String id;
     private String question;
     private QuestionType questionType;
     private String answerText;
     private Double answerNum;
     private List<String> options;
 
-    public Flashcard() {}
+    public Flashcard() {
+        this.id = UUID.randomUUID().toString();
+    }
 
     // Konstruktor für Freitext
     public Flashcard(String question, String answerText) {
+        this();
         this.question = question;
         this.questionType = QuestionType.FREE_TEXT;
         this.answerText = answerText;
@@ -25,6 +30,7 @@ public class Flashcard implements Serializable {
 
     // Konstruktor für Multiple Choice
     public Flashcard(String question, String answerText, List<String> options) {
+        this();
         this.question = question;
         this.questionType = QuestionType.MULTIPLE_CHOICE;
         this.answerText = answerText;
@@ -33,6 +39,7 @@ public class Flashcard implements Serializable {
 
     // Konstruktor für True/False
     public Flashcard(String question, boolean trueFalse) {
+        this();
         this.question = question;
         this.questionType = QuestionType.TRUE_FALSE;
         this.answerText = trueFalse ? "Wahr" : "Falsch";
@@ -40,9 +47,18 @@ public class Flashcard implements Serializable {
 
     // Konstruktor für numerische Fragen
     public Flashcard(String question, double answerNum) {
+        this();
         this.question = question;
         this.questionType = QuestionType.NUMERIC;
         this.answerNum = answerNum;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getQuestion() {

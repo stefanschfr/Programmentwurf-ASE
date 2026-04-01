@@ -2,11 +2,14 @@ package de.sagaweschaefer.flashcard.menu.flashcardsetmanager;
 
 import de.sagaweschaefer.flashcard.menu.flashcardmanager.FlashcardManagerMenu;
 import de.sagaweschaefer.flashcard.menu.flashcardmanager.FlashcardManagerMenuHelper;
+import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
+import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.List;
+import java.util.Map;
 
 public class FlashcardSetManagerMenuHelper {
     private List<FlashcardSet> flashcardSets;
@@ -48,6 +51,19 @@ public class FlashcardSetManagerMenuHelper {
         }
 
         FlashcardSet removed = flashcardSets.remove(index);
+        
+        // Verwaiste Statistiken für alle Karten im Set entfernen
+        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
+        boolean statsChanged = false;
+        for (Flashcard card : removed.getFlashcardSet()) {
+            if (statisticsMap.remove(card.getId()) != null) {
+                statsChanged = true;
+            }
+        }
+        if (statsChanged) {
+            storage.saveStatistics(statisticsMap);
+        }
+
         System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
         return true;
     }
