@@ -3,7 +3,6 @@ package de.sagaweschaefer.flashcard.menu.flashcardsession;
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
-import de.sagaweschaefer.flashcard.model.QuestionType;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
@@ -15,6 +14,7 @@ import java.util.Map;
 public class FlashcardSessionMenuHelper {
     private List<FlashcardSet> flashcardSets;
     private final JsonStorage storage = new JsonStorage();
+    private final FlashcardSessionEngine engine = new FlashcardSessionEngine(storage);
 
     public FlashcardSessionMenuHelper() {
         refreshFlashcardSets();
@@ -50,7 +50,7 @@ public class FlashcardSessionMenuHelper {
                 return;
             }
             
-            runSession(cardsToLearn, set.getName(), false);
+            engine.runSession(cardsToLearn, set.getName());
         } else {
             System.out.println("Ungültige Auswahl.");
         }
@@ -80,7 +80,7 @@ public class FlashcardSessionMenuHelper {
             return;
         }
 
-        runSession(wrongAnswers, "Falsch beantwortete Fragen (Stufe 0)", true);
+        engine.runSession(wrongAnswers, "Falsch beantwortete Fragen (Stufe 0)");
     }
 
     public void startDueCardsSession() {
@@ -107,7 +107,7 @@ public class FlashcardSessionMenuHelper {
             return;
         }
 
-        runSession(dueCards, "Fällige Lernkarten", false);
+        engine.runSession(dueCards, "Fällige Lernkarten");
     }
 
     public void startExamMode() {
@@ -132,169 +132,9 @@ public class FlashcardSessionMenuHelper {
             Collections.shuffle(allCards);
             List<Flashcard> examCards = allCards.subList(0, 10);
             
-            runExamSession(examCards, set.getName());
+            engine.runExamSession(examCards, set.getName());
         } else {
             System.out.println("Ungültige Auswahl.");
         }
-    }
-
-    private void runSession(List<Flashcard> cardsToUse, String sessionName, boolean isWrongAnswersMode) {
-        List<Flashcard> cards = new ArrayList<>(cardsToUse);
-        if (cards.isEmpty()) {
-            System.out.println("Keine Karten zum Lernen verfügbar.");
-            return;
-        }
-
-        Collections.shuffle(cards);
-        int correctCount = 0;
-        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
-        boolean statsChanged = false;
-
-        System.out.println("\n--- Session gestartet: " + sessionName + " ---");
-        for (Flashcard card : cards) {
-            FlashcardStatistics stats = statisticsMap.computeIfAbsent(card.getId(), FlashcardStatistics::new);
-            if (askQuestion(card)) {
-                System.out.println("Richtig!");
-                correctCount++;
-                stats.incrementCorrect();
-                statsChanged = true;
-            } else {
-                System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
-                stats.incrementWrong();
-                statsChanged = true;
-            }
-        }
-
-        if (statsChanged) {
-            storage.saveStatistics(statisticsMap);
-        }
-        displaySessionResult(correctCount, cards.size(), 0);
-    }
-
-    private void runExamSession(List<Flashcard> examCards, String setName) {
-        long startTime = System.currentTimeMillis();
-        long limitMillis = 10 * 60 * 1000; // 10 Minuten
-        int correctCount = 0;
-        int totalQuestions = examCards.size();
-        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
-        boolean statsChanged = false;
-
-        System.out.println("\n--- Prüfung gestartet: " + setName + " ---");
-        System.out.println("Anzahl Fragen: " + totalQuestions);
-        System.out.println("Zeitlimit: 10 Minuten");
-
-        for (int i = 0; i < examCards.size(); i++) {
-            long currentTime = System.currentTimeMillis();
-            long elapsedTime = currentTime - startTime;
-            
-            if (elapsedTime >= limitMillis) {
-                System.out.println("\n!!! ZEIT ABGELAUFEN !!!");
-                break;
-            }
-
-            Flashcard card = examCards.get(i);
-            FlashcardStatistics stats = statisticsMap.computeIfAbsent(card.getId(), FlashcardStatistics::new);
-            System.out.println("\nFrage " + (i + 1) + " von " + totalQuestions);
-            System.out.println("Verbleibende Zeit: " + formatTime(limitMillis - elapsedTime));
-
-            if (askQuestion(card)) {
-                System.out.println("Richtig!");
-                correctCount++;
-                stats.incrementCorrect();
-                statsChanged = true;
-            } else {
-                System.out.println("Falsch! Die richtige Antwort war: " + getCorrectAnswerDisplay(card));
-                stats.incrementWrong();
-                statsChanged = true;
-            }
-            
-            // Prüfung nach der Beantwortung, falls die Beantwortung lange gedauert hat
-            if (System.currentTimeMillis() - startTime >= limitMillis) {
-                System.out.println("\n!!! ZEIT WÄHREND DER LETZTEN FRAGE ABGELAUFEN !!!");
-                if (i < totalQuestions - 1) {
-                    break;
-                }
-            }
-        }
-
-        if (statsChanged) {
-            storage.saveStatistics(statisticsMap);
-        }
-        System.out.println("\n--- Prüfung beendet ---");
-        displaySessionResult(correctCount, totalQuestions, System.currentTimeMillis() - startTime);
-    }
-
-
-    private void displaySessionResult(int correctCount, int totalCount, long durationMillis) {
-        if (durationMillis == 0) {
-            System.out.println("\n--- Session beendet ---");
-        }
-        System.out.println("Ergebnis: " + correctCount + " von " + totalCount + " richtig beantwortet.");
-        
-        if (totalCount > 0) {
-            double percentage = (double) correctCount / totalCount * 100;
-            System.out.printf("Prozentual richtig: %.2f%%\n", percentage);
-            System.out.println("Erreichte Note: " + calculateGrade(percentage));
-        }
-
-        if (durationMillis > 0) {
-            System.out.println("Benötigte Zeit: " + formatTime(durationMillis));
-        }
-    }
-
-    private double calculateGrade(double percentage) {
-        if (percentage >= 95) return 1.0;
-        if (percentage <= 0) return 6.0;
-
-        double grade;
-
-        if (percentage >= 50) {
-            grade = 4.0 - (percentage - 50) * (3.0 / 45.0); // 50->4.0, 95->1.0
-        } else if (percentage >= 30) {
-            grade = 5.0 - (percentage - 30) * (1.0 / 20.0); // 30->5.0, 50->4.0
-        } else {
-            grade = 6.0 - (percentage - 0) * (1.0 / 30.0); // 0->6.0, 30->5.0
-        }
-
-        return Math.round(grade * 10.0) / 10.0;
-    }
-
-    private String formatTime(long millis) {
-        return (millis / 60000) + "m " + ((millis % 60000) / 1000) + "s";
-    }
-
-    private boolean askQuestion(Flashcard card) {
-        System.out.println("\nFrage: " + card.getQuestion());
-        
-        if (card.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
-            List<String> options = card.getOptions();
-            for (int i = 0; i < options.size(); i++) {
-                System.out.println((i + 1) + ". " + options.get(i));
-            }
-            String answer = MenuUtils.promptForString("Deine Antwort (Text): ");
-            return answer.equalsIgnoreCase(card.getAnswerText());
-        } else if (card.getQuestionType() == QuestionType.TRUE_FALSE) {
-            String answer = MenuUtils.promptForString("Wahr (w) oder Falsch (f)? ");
-            String normalizedAnswer = answer.toLowerCase().startsWith("w") ? "Wahr" : "Falsch";
-            return normalizedAnswer.equalsIgnoreCase(card.getAnswerText());
-        } else if (card.getQuestionType() == QuestionType.NUMERIC) {
-            String input = MenuUtils.promptForString("Deine Antwort (Zahl): ");
-            try {
-                double val = Double.parseDouble(input);
-                return Math.abs(val - card.getAnswerNum()) < 0.001;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        } else { // FREE_TEXT
-            String answer = MenuUtils.promptForString("Deine Antwort: ");
-            return answer.trim().equalsIgnoreCase(card.getAnswerText().trim());
-        }
-    }
-
-    private String getCorrectAnswerDisplay(Flashcard card) {
-        if (card.getQuestionType() == QuestionType.NUMERIC) {
-            return String.valueOf(card.getAnswerNum());
-        }
-        return card.getAnswerText();
     }
 }
