@@ -1,8 +1,11 @@
 package de.sagaweschaefer.flashcard.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FlashcardStatistics implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -72,5 +75,30 @@ public class FlashcardStatistics implements Serializable {
     public void incrementWrong() {
         this.wrongCount++;
         this.level = 0;
+    }
+
+    @JsonIgnore
+    public boolean isDue() {
+        if (level == 0 || lastCorrectAt == null) {
+            return true;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        switch (level) {
+            case 1:
+                return lastCorrectAt.plusMinutes(1).isBefore(now);
+            case 2:
+                return lastCorrectAt.plusMinutes(10).isBefore(now);
+            case 3:
+                return lastCorrectAt.plusHours(5).isBefore(now);
+            case 4:
+                return lastCorrectAt.plusDays(1).isBefore(now);
+            case 5:
+                return lastCorrectAt.plusDays(14).isBefore(now);
+            case 6:
+                return lastCorrectAt.plusMonths(1).isBefore(now);
+            default:
+                return true;
+        }
     }
 }

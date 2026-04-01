@@ -83,6 +83,33 @@ public class FlashcardSessionMenuHelper {
         runSession(wrongAnswers, "Falsch beantwortete Fragen (Stufe 0)", true);
     }
 
+    public void startDueCardsSession() {
+        refreshFlashcardSets();
+        if (flashcardSets.isEmpty()) {
+            System.out.println("Es sind keine Lernkartensets verfügbar.");
+            return;
+        }
+
+        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
+        List<Flashcard> dueCards = new ArrayList<>();
+
+        for (FlashcardSet set : flashcardSets) {
+            for (Flashcard card : set.getFlashcardSet()) {
+                FlashcardStatistics stats = statisticsMap.get(card.getId());
+                if (stats == null || stats.isDue()) {
+                    dueCards.add(card);
+                }
+            }
+        }
+
+        if (dueCards.isEmpty()) {
+            System.out.println("Es sind momentan keine Lernkarten fällig.");
+            return;
+        }
+
+        runSession(dueCards, "Fällige Lernkarten", false);
+    }
+
     public void startExamMode() {
         refreshFlashcardSets();
         if (flashcardSets.isEmpty()) {
