@@ -144,4 +144,61 @@ public class StatisticsMenuHelper {
             }
         }
     }
+
+    public void showCardStatistics() {
+        List<FlashcardSet> sets = jsonStorage.loadFlashcardSets();
+        if (sets.isEmpty()) {
+            System.out.println("Keine Lernsets vorhanden.");
+            return;
+        }
+
+        de.sagaweschaefer.flashcard.util.MenuUtils.displayFlashcardSets(sets, "Einzelspezifische Statistik: Set wählen");
+        int setSelection = de.sagaweschaefer.flashcard.util.MenuUtils.promptForInt("Bitte wählen Sie ein Set aus (0 zum Abbrechen): ");
+
+        if (setSelection > 0 && setSelection <= sets.size()) {
+            FlashcardSet selectedSet = sets.get(setSelection - 1);
+            List<de.sagaweschaefer.flashcard.model.Flashcard> cards = selectedSet.getFlashcardSet();
+            
+            if (cards.isEmpty()) {
+                System.out.println("Dieses Set enthält keine Karten.");
+                return;
+            }
+
+            System.out.println("\n--- Karten im Set: " + selectedSet.getName() + " ---");
+            for (int i = 0; i < cards.size(); i++) {
+                System.out.printf("%d. %s\n", i + 1, cards.get(i).getQuestion());
+            }
+
+            int cardSelection = de.sagaweschaefer.flashcard.util.MenuUtils.promptForInt("Bitte wählen Sie eine Karte aus (0 zum Abbrechen): ");
+
+            if (cardSelection > 0 && cardSelection <= cards.size()) {
+                de.sagaweschaefer.flashcard.model.Flashcard selectedCard = cards.get(cardSelection - 1);
+                Map<String, FlashcardStatistics> statsMap = jsonStorage.loadStatistics();
+                FlashcardStatistics stats = statsMap.get(selectedCard.getId());
+
+                System.out.println("\n--- Statistik für Frage ---");
+                System.out.println("Frage: " + selectedCard.getQuestion());
+                System.out.println("Typ: " + selectedCard.getQuestionType());
+
+                if (stats != null) {
+                    int totalAnswers = stats.getCorrectCount() + stats.getWrongCount();
+                    double correctPercentage = totalAnswers > 0 ? (double) stats.getCorrectCount() / totalAnswers * 100 : 0;
+
+                    System.out.println("Richtig beantwortet: " + stats.getCorrectCount());
+                    System.out.println("Falsch beantwortet: " + stats.getWrongCount());
+                    System.out.printf("Erfolgsquote: %.2f%%\n", correctPercentage);
+                    System.out.println("Aktuelles Level: " + stats.getLevel());
+                    System.out.println("Fällig: " + (stats.isDue() ? "Ja" : "Nein"));
+                    if (stats.getLastCorrectAt() != null) {
+                        System.out.println("Zuletzt richtig: " + stats.getLastCorrectAt().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+                    }
+                } else {
+                    System.out.println("Status: Noch nie geübt");
+                    System.out.println("Level: 0");
+                    System.out.println("Fällig: Ja");
+                }
+                System.out.println("---------------------------");
+            }
+        }
+    }
 }
