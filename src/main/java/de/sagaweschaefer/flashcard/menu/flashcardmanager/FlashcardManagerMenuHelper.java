@@ -28,7 +28,8 @@ public class FlashcardManagerMenuHelper {
     }
 
     public void listFlashcards() {
-        MenuUtils.displayFlashcards(flashcardSet.getFlashcardSet(), "Fragen in '" + flashcardSet.getName() + "'");
+        Map<String, FlashcardStatistics> statistics = storage.loadStatistics();
+        MenuUtils.displayFlashcards(flashcardSet.getFlashcardSet(), statistics, "Fragen in '" + flashcardSet.getName() + "'");
     }
 
     public void deleteFlashcard() {
