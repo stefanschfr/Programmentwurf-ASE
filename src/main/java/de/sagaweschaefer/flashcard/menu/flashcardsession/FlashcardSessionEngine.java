@@ -3,6 +3,7 @@ package de.sagaweschaefer.flashcard.menu.flashcardsession;
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
+import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +37,18 @@ public class FlashcardSessionEngine {
             if (FlashcardQuestionHelper.askQuestion(card)) {
                 System.out.println("Richtig!");
                 correctCount++;
-                stats.incrementCorrect(wasDue);
+                stats.incrementCorrect();
+                
+                System.out.println("Wie gut konntest du die Frage beantworten?");
+                System.out.println("1. Nicht so gut (Level -1)");
+                System.out.println("2. Ganz ok (Level bleibt)");
+                if (wasDue) {
+                    System.out.println("3. Sehr gut (Level +1)");
+                }
+                
+                int rating = MenuUtils.promptForInt("Deine Wahl: ");
+                stats.applyRating(rating, wasDue);
+                
                 statsChanged = true;
             } else {
                 System.out.println("Falsch! Die richtige Antwort war: " + FlashcardQuestionHelper.getCorrectAnswerDisplay(card));
@@ -74,14 +86,13 @@ public class FlashcardSessionEngine {
 
             Flashcard card = examCards.get(i);
             FlashcardStatistics stats = statisticsMap.computeIfAbsent(card.getId(), FlashcardStatistics::new);
-            boolean wasDue = stats.isDue();
             System.out.println("\nFrage " + (i + 1) + " von " + totalQuestions);
             System.out.println("Verbleibende Zeit: " + FlashcardSessionStatistics.formatTime(limitMillis - elapsedTime));
 
             if (FlashcardQuestionHelper.askQuestion(card)) {
                 System.out.println("Richtig!");
                 correctCount++;
-                stats.incrementCorrect(wasDue);
+                stats.incrementCorrect();
                 statsChanged = true;
             } else {
                 System.out.println("Falsch! Die richtige Antwort war: " + FlashcardQuestionHelper.getCorrectAnswerDisplay(card));

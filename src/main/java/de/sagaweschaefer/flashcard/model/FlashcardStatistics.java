@@ -64,12 +64,22 @@ public class FlashcardStatistics implements Serializable {
         this.level = level;
     }
 
-    public void incrementCorrect(boolean wasDue) {
+    public void incrementCorrect() {
         this.correctCount++;
         this.lastCorrectAt = LocalDateTime.now();
-        if (wasDue && this.level < 6) {
-            this.level++;
+    }
+
+    public void applyRating(int rating, boolean wasDue) {
+        if (rating == 1) {
+            if (this.level > 0) {
+                this.level--;
+            }
+        } else if (rating == 3) {
+            if (wasDue && this.level < 6) {
+                this.level++;
+            }
         }
+        // rating == 2: Level bleibt gleich, keine Aktion erforderlich
     }
 
     public void incrementWrong() {
