@@ -24,6 +24,28 @@ public class MenuUtils {
         return readMenuSelection();
     }
 
+    public static <T> T selectFromList(List<T> list, String prompt) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        int index = promptForInt(prompt) - 1;
+        if (index >= 0 && index < list.size()) {
+            return list.get(index);
+        }
+        return null;
+    }
+
+    public static <T> int selectIndexFromList(List<T> list, String prompt) {
+        if (list == null || list.isEmpty()) {
+            return -1;
+        }
+        int index = promptForInt(prompt) - 1;
+        if (index >= 0 && index < list.size()) {
+            return index;
+        }
+        return -1;
+    }
+
     public static void displayFlashcardSets(List<FlashcardSet> sets, String title) {
         if (sets.isEmpty()) {
             System.out.println("Es wurden noch keine Lernkartensets erstellt.");

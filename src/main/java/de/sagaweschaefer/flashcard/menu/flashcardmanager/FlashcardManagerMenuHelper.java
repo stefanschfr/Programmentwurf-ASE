@@ -35,11 +35,11 @@ public class FlashcardManagerMenuHelper {
 
     public void deleteFlashcard() {
         listFlashcards();
-        if (flashcardSet.getFlashcardSet().isEmpty()) return;
-
-        int index = MenuUtils.promptForInt("Geben Sie die Nummer der Frage ein, die gelöscht werden soll: ") - 1;
         List<Flashcard> flashcards = flashcardSet.getFlashcardSet();
-        if (index < 0 || index >= flashcards.size()) {
+        if (flashcards.isEmpty()) return;
+
+        int index = MenuUtils.selectIndexFromList(flashcards, "Geben Sie die Nummer der Frage ein, die gelöscht werden soll: ");
+        if (index == -1) {
             System.out.println("Ungültige Auswahl! Keine Frage gelöscht.");
             return;
         }

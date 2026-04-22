@@ -20,13 +20,13 @@ public class FlashcardCreationMenuHelper {
     }
 
     public void addFreeTextFlashcard() {
-        String question = MenuUtils.promptForString("Frage eingeben: ");
+        String question = promptQuestion();
         String answer = MenuUtils.promptForString("Antworttext eingeben: ");
         addFlashcard(new Flashcard(question, answer));
     }
 
     public void addMultipleChoiceFlashcard() {
-        String question = MenuUtils.promptForString("Frage eingeben: ");
+        String question = promptQuestion();
         String correctAnswer = MenuUtils.promptForString("Korrekte Antwort eingeben: ");
         int numOptions = MenuUtils.promptForInt("Wie viele falsche Optionen möchten Sie hinzufügen? ");
         List<String> options = new ArrayList<>();
@@ -38,19 +38,23 @@ public class FlashcardCreationMenuHelper {
     }
 
     public void addTrueFalseFlashcard() {
-        String question = MenuUtils.promptForString("Frage eingeben: ");
+        String question = promptQuestion();
         boolean isTrue = MenuUtils.promptForString("Ist die Aussage wahr? (j/n): ").equalsIgnoreCase("j");
         addFlashcard(new Flashcard(question, isTrue));
     }
 
     public void addNumericFlashcard() {
-        String question = MenuUtils.promptForString("Frage eingeben: ");
+        String question = promptQuestion();
         try {
             double numAnswer = Double.parseDouble(MenuUtils.promptForString("Numerische Antwort eingeben: "));
             addFlashcard(new Flashcard(question, numAnswer));
         } catch (NumberFormatException e) {
             System.out.println("Ungültige Zahl! Frage wurde nicht erstellt.");
         }
+    }
+
+    private String promptQuestion() {
+        return MenuUtils.promptForString("Frage eingeben: ");
     }
 
     private void addFlashcard(Flashcard flashcard) {

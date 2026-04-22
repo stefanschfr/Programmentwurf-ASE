@@ -34,10 +34,9 @@ public class FlashcardSessionMenuHelper {
         }
 
         MenuUtils.displayFlashcardSets(flashcardSets, "Verfügbare Lernkartensets");
-        int choice = MenuUtils.promptForInt("Wähle ein Lernkartenset (Nummer): ") - 1;
+        FlashcardSet set = MenuUtils.selectFromList(flashcardSets, "Wähle ein Lernkartenset (Nummer): ");
 
-        if (choice >= 0 && choice < flashcardSets.size()) {
-            FlashcardSet set = flashcardSets.get(choice);
+        if (set != null) {
             Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
             List<Flashcard> cardsToLearn = new ArrayList<>();
             for (Flashcard card : set.getFlashcardSet()) {
@@ -120,10 +119,9 @@ public class FlashcardSessionMenuHelper {
         }
 
         MenuUtils.displayFlashcardSets(flashcardSets, "Verfügbare Lernkartensets");
-        int choice = MenuUtils.promptForInt("Wähle ein Lernkartenset für die Prüfung (Nummer): ") - 1;
+        FlashcardSet set = MenuUtils.selectFromList(flashcardSets, "Wähle ein Lernkartenset für die Prüfung (Nummer): ");
 
-        if (choice >= 0 && choice < flashcardSets.size()) {
-            FlashcardSet set = flashcardSets.get(choice);
+        if (set != null) {
             List<Flashcard> allCards = new ArrayList<>(set.getFlashcardSet());
             
             if (allCards.size() < 10) {

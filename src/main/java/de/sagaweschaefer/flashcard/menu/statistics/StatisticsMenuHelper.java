@@ -3,6 +3,7 @@ import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.model.SessionResult;
 import de.sagaweschaefer.flashcard.util.FlashcardStorage;
+import de.sagaweschaefer.flashcard.util.StatisticsCalculator;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -20,85 +21,26 @@ public class StatisticsMenuHelper {
         List<FlashcardSet> sets = storage.loadFlashcardSets();
         Map<String, FlashcardStatistics> statsMap = storage.loadStatistics();
 
-        int totalSets = sets.size();
-        int totalQuestions = 0;
-        int totalCorrect = 0;
-        int totalWrong = 0;
-        int neverAnswered = 0;
-        int dueCards = 0;
-        int[] levelDistribution = new int[7];
-        double totalLevel = 0;
-
-        FlashcardStatistics mostFrequentStats = null;
-        String mostFrequentQuestion = "N/A";
-
-        Map<String, String> idToQuestionMap = new java.util.HashMap<>();
-        for (FlashcardSet set : sets) {
-            for (de.sagaweschaefer.flashcard.model.Flashcard card : set.getFlashcardSet()) {
-                totalQuestions++;
-                idToQuestionMap.put(card.getId(), card.getQuestion());
-            }
-        }
-
-        for (FlashcardStatistics stats : statsMap.values()) {
-            totalCorrect += stats.getCorrectCount();
-            totalWrong += stats.getWrongCount();
-            
-            if (stats.getCorrectCount() == 0 && stats.getWrongCount() == 0) {
-                neverAnswered++;
-            }
-            
-            if (stats.isDue()) {
-                dueCards++;
-            }
-            
-            int level = stats.getLevel();
-            if (level >= 0 && level <= 6) {
-                levelDistribution[level]++;
-            }
-            totalLevel += level;
-
-            if (mostFrequentStats == null || 
-                (stats.getCorrectCount() + stats.getWrongCount()) > (mostFrequentStats.getCorrectCount() + mostFrequentStats.getWrongCount())) {
-                mostFrequentStats = stats;
-            }
-        }
-        
-        // Karten ohne Statistiken zählen auch als "noch nie beantwortet"
-        int totalCardsInStats = statsMap.keySet().size();
-        int missingCards = totalQuestions - totalCardsInStats;
-        neverAnswered += Math.max(0, missingCards);
-        
-        dueCards += Math.max(0, missingCards);
-        levelDistribution[0] += Math.max(0, missingCards);
-
-        if (mostFrequentStats != null && (mostFrequentStats.getCorrectCount() + mostFrequentStats.getWrongCount()) > 0) {
-            mostFrequentQuestion = idToQuestionMap.getOrDefault(mostFrequentStats.getFlashcardId(), "Unbekannte Frage");
-        }
-
-        int totalAnswers = totalCorrect + totalWrong;
-        double correctPercentage = totalAnswers > 0 ? (double) totalCorrect / totalAnswers * 100 : 0;
-        double averageLevel = totalQuestions > 0 ? totalLevel / totalQuestions : 0;
+        StatisticsCalculator.GeneralStats stats = StatisticsCalculator.calculateGeneralStats(sets, statsMap);
 
         System.out.println("\n--- Gesamtstatistik ---");
-        System.out.println("Gesamte Anzahl an Lernsets: " + totalSets);
-        System.out.println("Gesamte Anzahl an Fragen: " + totalQuestions);
-        System.out.println("Fragen richtig beantwortet: " + totalCorrect);
-        System.out.println("Fragen falsch beantwortet: " + totalWrong);
-        System.out.printf("Erfolgsquote: %.2f%%\n", correctPercentage);
+        System.out.println("Gesamte Anzahl an Lernsets: " + stats.totalSets);
+        System.out.println("Gesamte Anzahl an Fragen: " + stats.totalQuestions);
+        System.out.println("Fragen richtig beantwortet: " + stats.totalCorrect);
+        System.out.println("Fragen falsch beantwortet: " + stats.totalWrong);
+        System.out.printf("Erfolgsquote: %.2f%%\n", stats.correctPercentage);
         System.out.println("-----------------------");
-        System.out.println("Fällige Karten: " + dueCards);
-        System.out.println("Noch nie beantwortete Karten: " + neverAnswered);
-        System.out.printf("Durchschnittliches Level: %.2f\n", averageLevel);
+        System.out.println("Fällige Karten: " + stats.dueCards);
+        System.out.println("Noch nie beantwortete Karten: " + stats.neverAnswered);
+        System.out.printf("Durchschnittliches Level: %.2f\n", stats.averageLevel);
         
         System.out.println("\nLevel-Verteilung:");
         for (int i = 0; i <= 6; i++) {
-            System.out.printf("  Level %d: %d Karten\n", i, levelDistribution[i]);
+            System.out.printf("  Level %d: %d Karten\n", i, stats.levelDistribution[i]);
         }
         
-        if (!mostFrequentQuestion.equals("N/A")) {
-            int count = mostFrequentStats.getCorrectCount() + mostFrequentStats.getWrongCount();
-            System.out.println("\nMeistgeübte Karte: \"" + mostFrequentQuestion + "\" (" + count + " Versuche)");
+        if (!stats.mostFrequentQuestion.equals("N/A")) {
+            System.out.println("\nMeistgeübte Karte: \"" + stats.mostFrequentQuestion + "\" (" + stats.mostFrequentCount + " Versuche)");
         }
     }
     public void showSetStatistics() {
@@ -109,10 +51,9 @@ public class StatisticsMenuHelper {
         }
 
         de.sagaweschaefer.flashcard.util.MenuUtils.displayFlashcardSets(sets, "Statistik nach Set");
-        int selection = de.sagaweschaefer.flashcard.util.MenuUtils.promptForInt("Bitte wählen Sie ein Set aus (0 zum Abbrechen): ");
+        FlashcardSet selectedSet = de.sagaweschaefer.flashcard.util.MenuUtils.selectFromList(sets, "Bitte wählen Sie ein Set aus (0 zum Abbrechen): ");
 
-        if (selection > 0 && selection <= sets.size()) {
-            FlashcardSet selectedSet = sets.get(selection - 1);
+        if (selectedSet != null) {
             Map<String, FlashcardStatistics> statsMap = storage.loadStatistics();
 
             int totalQuestions = selectedSet.getFlashcardSet().size();
@@ -160,10 +101,9 @@ public class StatisticsMenuHelper {
         }
 
         de.sagaweschaefer.flashcard.util.MenuUtils.displayFlashcardSets(sets, "Einzelspezifische Statistik: Set wählen");
-        int setSelection = de.sagaweschaefer.flashcard.util.MenuUtils.promptForInt("Bitte wählen Sie ein Set aus (0 zum Abbrechen): ");
+        FlashcardSet selectedSet = de.sagaweschaefer.flashcard.util.MenuUtils.selectFromList(sets, "Bitte wählen Sie ein Set aus (0 zum Abbrechen): ");
 
-        if (setSelection > 0 && setSelection <= sets.size()) {
-            FlashcardSet selectedSet = sets.get(setSelection - 1);
+        if (selectedSet != null) {
             List<de.sagaweschaefer.flashcard.model.Flashcard> cards = selectedSet.getFlashcardSet();
             
             if (cards.isEmpty()) {
@@ -178,10 +118,9 @@ public class StatisticsMenuHelper {
                 System.out.printf("%d. %s\n", i + 1, cards.get(i).getQuestion());
             }
 
-            int cardSelection = de.sagaweschaefer.flashcard.util.MenuUtils.promptForInt("Bitte wählen Sie eine Karte aus (0 zum Abbrechen): ");
+            de.sagaweschaefer.flashcard.model.Flashcard selectedCard = de.sagaweschaefer.flashcard.util.MenuUtils.selectFromList(cards, "Bitte wählen Sie eine Karte aus (0 zum Abbrechen): ");
 
-            if (cardSelection > 0 && cardSelection <= cards.size()) {
-                de.sagaweschaefer.flashcard.model.Flashcard selectedCard = cards.get(cardSelection - 1);
+            if (selectedCard != null) {
                 FlashcardStatistics stats = statsMap.get(selectedCard.getId());
 
                 System.out.println("\n--- Statistik für Frage ---");
