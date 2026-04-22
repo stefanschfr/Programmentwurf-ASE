@@ -1,11 +1,13 @@
 package de.sagaweschaefer.flashcard.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
+import de.sagaweschaefer.flashcard.model.SessionResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +20,14 @@ public class JsonStorage {
 
     private static final String FILE_PATH = "data/flashcard-sets.json";
     private static final String STATISTICS_PATH = "data/flashcard-statistics.json";
+    private static final String SESSION_RESULTS_PATH = "data/session-results.json";
     private final ObjectMapper objectMapper;
 
     public JsonStorage() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public void saveFlashcardSets(List<FlashcardSet> flashcardSets) {
@@ -33,6 +37,10 @@ public class JsonStorage {
 
     public void saveStatistics(Map<String, FlashcardStatistics> statistics) {
         saveToFile(STATISTICS_PATH, statistics);
+    }
+
+    public void saveSessionResults(List<SessionResult> results) {
+        saveToFile(SESSION_RESULTS_PATH, results);
     }
 
     private void saveToFile(String path, Object object) {
@@ -75,6 +83,20 @@ public class JsonStorage {
         } catch (IOException e) {
             System.out.println("Error while loading statistics: " + e.getMessage());
             return new HashMap<>();
+        }
+    }
+
+    public List<SessionResult> loadSessionResults() {
+        File file = new File(SESSION_RESULTS_PATH);
+        if (!file.exists()) {
+            return new ArrayList<>();
+        }
+
+        try {
+            return objectMapper.readValue(file, new TypeReference<List<SessionResult>>() {});
+        } catch (IOException e) {
+            System.out.println("Error while loading session results: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 }

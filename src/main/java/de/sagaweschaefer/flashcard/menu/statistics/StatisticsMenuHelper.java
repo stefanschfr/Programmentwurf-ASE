@@ -1,8 +1,11 @@
 package de.sagaweschaefer.flashcard.menu.statistics;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
+import de.sagaweschaefer.flashcard.model.SessionResult;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -199,6 +202,33 @@ public class StatisticsMenuHelper {
                 }
                 System.out.println("---------------------------");
             }
+        }
+    }
+
+    public void showLastSessionResults() {
+        List<SessionResult> results = jsonStorage.loadSessionResults();
+        if (results.isEmpty()) {
+            System.out.println("Noch keine Lernsessions gespeichert.");
+            return;
+        }
+
+        System.out.println("\n--- Ergebnisse der letzten drei Lernsessions ---");
+        Collections.reverse(results);
+        int count = Math.min(3, results.size());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+        for (int i = 0; i < count; i++) {
+            SessionResult result = results.get(i);
+            System.out.printf("%d. %s (%s)\n", i + 1, result.getSessionName(), result.getTimestamp().format(formatter));
+            System.out.printf("   Ergebnis: %d von %d richtig (%.2f%%)\n", 
+                result.getCorrectCount(), result.getTotalCount(), result.getPercentage());
+            if (result.getTotalCount() > 0) {
+                System.out.println("   Erreichte Note: " + de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionStatistics.calculateGrade(result.getPercentage()));
+            }
+            if (result.getDurationMillis() > 0) {
+                System.out.println("   Benötigte Zeit: " + de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionStatistics.formatTime(result.getDurationMillis()));
+            }
+            System.out.println("------------------------------------------------");
         }
     }
 }

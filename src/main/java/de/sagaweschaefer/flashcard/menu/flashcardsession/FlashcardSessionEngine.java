@@ -2,6 +2,7 @@ package de.sagaweschaefer.flashcard.menu.flashcardsession;
 
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
+import de.sagaweschaefer.flashcard.model.SessionResult;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
@@ -19,6 +20,7 @@ public class FlashcardSessionEngine {
     }
 
     public void runSession(List<Flashcard> cardsToUse, String sessionName) {
+        long startTime = System.currentTimeMillis();
         List<Flashcard> cards = new ArrayList<>(cardsToUse);
         if (cards.isEmpty()) {
             System.out.println("Keine Karten zum Lernen verfügbar.");
@@ -60,7 +62,16 @@ public class FlashcardSessionEngine {
         if (statsChanged) {
             storage.saveStatistics(statisticsMap);
         }
-        FlashcardSessionStatistics.displaySessionResult(correctCount, cards.size(), 0);
+
+        long duration = System.currentTimeMillis() - startTime;
+        saveSessionResult(sessionName, correctCount, cards.size(), duration);
+        FlashcardSessionStatistics.displaySessionResult(correctCount, cards.size(), duration);
+    }
+
+    private void saveSessionResult(String sessionName, int correctCount, int totalCount, long durationMillis) {
+        List<SessionResult> results = storage.loadSessionResults();
+        results.add(new SessionResult(sessionName, correctCount, totalCount, durationMillis));
+        storage.saveSessionResults(results);
     }
 
     public void runExamSession(List<Flashcard> examCards, String setName) {
