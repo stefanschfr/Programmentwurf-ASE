@@ -24,6 +24,19 @@ public class MenuUtils {
         return readMenuSelection();
     }
 
+    public static double promptForDouble(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = AppScanner.SCANNER.nextLine();
+
+            try {
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Ungültige Zahl! Bitte erneut eingeben.");
+            }
+        }
+    }
+
     public static <T> T selectFromList(List<T> list, String prompt) {
         if (list == null || list.isEmpty()) {
             return null;
