@@ -219,23 +219,56 @@ public class StatisticsMenuHelper {
             return;
         }
 
-        System.out.println("\n--- Ergebnisse der letzten drei " + type + " ---");
         Collections.reverse(results);
-        int count = Math.min(3, results.size());
+        int pageSize = 3;
+        int totalResults = results.size();
+        int totalPages = (int) Math.ceil((double) totalResults / pageSize);
+        int currentPage = 0;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-        for (int i = 0; i < count; i++) {
-            SessionResult result = results.get(i);
-            System.out.printf("%d. %s (%s)\n", i + 1, result.getSessionName(), result.getTimestamp().format(formatter));
-            System.out.printf("   Ergebnis: %d von %d richtig (%.2f%%)\n",
-                result.getCorrectCount(), result.getTotalCount(), result.getPercentage());
-            if (result.getTotalCount() > 0) {
-                System.out.println("   Erreichte Note: " + de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionStatistics.calculateGrade(result.getPercentage()));
+        while (true) {
+            System.out.println("\n--- Ergebnisse der " + type + " (Seite " + (currentPage + 1) + " von " + totalPages + ") ---");
+            
+            int start = currentPage * pageSize;
+            int end = Math.min(start + pageSize, totalResults);
+
+            for (int i = start; i < end; i++) {
+                SessionResult result = results.get(i);
+                System.out.printf("%d. %s (%s)\n", i + 1, result.getSessionName(), result.getTimestamp().format(formatter));
+                System.out.printf("   Ergebnis: %d von %d richtig (%.2f%%)\n",
+                    result.getCorrectCount(), result.getTotalCount(), result.getPercentage());
+                if (result.getTotalCount() > 0) {
+                    System.out.println("   Erreichte Note: " + de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionStatistics.calculateGrade(result.getPercentage()));
+                }
+                if (result.getDurationMillis() > 0) {
+                    System.out.println("   Benötigte Zeit: " + de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionStatistics.formatTime(result.getDurationMillis()));
+                }
+                System.out.println("------------------------------------------------");
             }
-            if (result.getDurationMillis() > 0) {
-                System.out.println("   Benötigte Zeit: " + de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionStatistics.formatTime(result.getDurationMillis()));
+
+            System.out.println("\nOptionen:");
+            if (currentPage < totalPages - 1) {
+                System.out.println("(N)ächste Seite");
             }
-            System.out.println("------------------------------------------------");
+            if (currentPage > 0) {
+                System.out.println("(V)orherige Seite");
+            }
+            System.out.println("(B)eenden");
+
+            String choice = de.sagaweschaefer.flashcard.util.MenuUtils.promptForString("Wählen Sie eine Option: ").toUpperCase();
+
+            if (choice.equals("N") && currentPage < totalPages - 1) {
+                currentPage++;
+            } else if (choice.equals("V") && currentPage > 0) {
+                currentPage--;
+            } else if (choice.equals("B")) {
+                break;
+            } else {
+                System.out.println("Ungültige Auswahl.");
+            }
         }
+        
+        // Liste wieder in den Originalzustand bringen, falls sie woanders noch verwendet wird (obwohl hier lokal)
+        Collections.reverse(results);
     }
 }
