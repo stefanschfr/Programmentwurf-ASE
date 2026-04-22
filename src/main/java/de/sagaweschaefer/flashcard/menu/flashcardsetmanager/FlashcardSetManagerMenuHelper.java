@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class FlashcardSetManagerMenuHelper {
-    private List<FlashcardSet> flashcardSets;
     private final FlashcardStorage storage;
+    private List<FlashcardSet> flashcardSets;
 
     public FlashcardSetManagerMenuHelper(FlashcardStorage storage) {
         this.storage = storage;
@@ -50,7 +50,7 @@ public class FlashcardSetManagerMenuHelper {
 
     private void performDelete(int index) {
         FlashcardSet removed = flashcardSets.remove(index);
-        
+
         // Verwaiste Statistiken für alle Karten im Set entfernen
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         boolean statsChanged = false;
@@ -74,7 +74,7 @@ public class FlashcardSetManagerMenuHelper {
         FlashcardSet set = MenuUtils.selectFromList(flashcardSets, "Geben Sie die Nummer des Sets ein, das bearbeitet werden soll: ");
         if (set != null) {
             var flashcardManagerHelper = new FlashcardManagerMenuHelper(set, flashcardSets, storage);
-            new FlashcardManagerMenu(flashcardManagerHelper).start();
+            new FlashcardManagerMenu(flashcardManagerHelper, set.getName()).start();
         } else {
             System.out.println("Ungültige Auswahl!");
         }

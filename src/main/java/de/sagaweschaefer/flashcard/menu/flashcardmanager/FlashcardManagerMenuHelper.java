@@ -45,22 +45,14 @@ public class FlashcardManagerMenuHelper {
         }
 
         Flashcard removed = flashcards.remove(index);
-        
+
         // Verwaiste Statistiken entfernen
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         if (statisticsMap.remove(removed.getId()) != null) {
             storage.saveStatistics(statisticsMap);
         }
 
-        save();
-        System.out.println("Frage '" + removed.getQuestion() + "' wurde gelöscht.");
-    }
-
-    private void save() {
         storage.saveFlashcardSets(allSets);
-    }
-
-    public FlashcardSet getFlashcardSet() {
-        return flashcardSet;
+        System.out.println("Frage '" + removed.getQuestion() + "' wurde gelöscht.");
     }
 }
