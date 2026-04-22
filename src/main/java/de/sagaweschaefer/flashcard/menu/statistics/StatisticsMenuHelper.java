@@ -2,7 +2,7 @@ package de.sagaweschaefer.flashcard.menu.statistics;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.model.SessionResult;
-import de.sagaweschaefer.flashcard.util.JsonStorage;
+import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -10,11 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 public class StatisticsMenuHelper {
-    private final JsonStorage jsonStorage = new JsonStorage();
+    private final FlashcardStorage storage;
+
+    public StatisticsMenuHelper(FlashcardStorage storage) {
+        this.storage = storage;
+    }
 
     public void showGeneralStatistics() {
-        List<FlashcardSet> sets = jsonStorage.loadFlashcardSets();
-        Map<String, FlashcardStatistics> statsMap = jsonStorage.loadStatistics();
+        List<FlashcardSet> sets = storage.loadFlashcardSets();
+        Map<String, FlashcardStatistics> statsMap = storage.loadStatistics();
 
         int totalSets = sets.size();
         int totalQuestions = 0;
@@ -98,7 +102,7 @@ public class StatisticsMenuHelper {
         }
     }
     public void showSetStatistics() {
-        List<FlashcardSet> sets = jsonStorage.loadFlashcardSets();
+        List<FlashcardSet> sets = storage.loadFlashcardSets();
         if (sets.isEmpty()) {
             System.out.println("Keine Lernsets vorhanden.");
             return;
@@ -109,7 +113,7 @@ public class StatisticsMenuHelper {
 
         if (selection > 0 && selection <= sets.size()) {
             FlashcardSet selectedSet = sets.get(selection - 1);
-            Map<String, FlashcardStatistics> statsMap = jsonStorage.loadStatistics();
+            Map<String, FlashcardStatistics> statsMap = storage.loadStatistics();
 
             int totalQuestions = selectedSet.getFlashcardSet().size();
             int totalCorrect = 0;
@@ -149,7 +153,7 @@ public class StatisticsMenuHelper {
     }
 
     public void showCardStatistics() {
-        List<FlashcardSet> sets = jsonStorage.loadFlashcardSets();
+        List<FlashcardSet> sets = storage.loadFlashcardSets();
         if (sets.isEmpty()) {
             System.out.println("Keine Lernsets vorhanden.");
             return;
@@ -167,6 +171,8 @@ public class StatisticsMenuHelper {
                 return;
             }
 
+            Map<String, FlashcardStatistics> statsMap = storage.loadStatistics();
+
             System.out.println("\n--- Karten im Set: " + selectedSet.getName() + " ---");
             for (int i = 0; i < cards.size(); i++) {
                 System.out.printf("%d. %s\n", i + 1, cards.get(i).getQuestion());
@@ -176,7 +182,6 @@ public class StatisticsMenuHelper {
 
             if (cardSelection > 0 && cardSelection <= cards.size()) {
                 de.sagaweschaefer.flashcard.model.Flashcard selectedCard = cards.get(cardSelection - 1);
-                Map<String, FlashcardStatistics> statsMap = jsonStorage.loadStatistics();
                 FlashcardStatistics stats = statsMap.get(selectedCard.getId());
 
                 System.out.println("\n--- Statistik für Frage ---");
@@ -206,11 +211,11 @@ public class StatisticsMenuHelper {
     }
 
     public void showLastSessionResults() {
-        displayResults(jsonStorage.loadSessionResults(), "Lernsessions");
+        displayResults(storage.loadSessionResults(), "Lernsessions");
     }
 
     public void showLastExamResults() {
-        displayResults(jsonStorage.loadExamResults(), "Prüfungen");
+        displayResults(storage.loadExamResults(), "Prüfungen");
     }
 
     private void displayResults(List<SessionResult> results, String type) {

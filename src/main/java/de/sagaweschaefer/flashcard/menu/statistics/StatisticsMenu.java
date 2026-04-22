@@ -2,13 +2,14 @@ package de.sagaweschaefer.flashcard.menu.statistics;
 
 import de.sagaweschaefer.flashcard.menu.Menu;
 import de.sagaweschaefer.flashcard.menu.MenuItem;
-import de.sagaweschaefer.flashcard.menu.flashcardsetmanager.FlashcardSetManagerMenuHelper;
+import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 
 public class StatisticsMenu {
     private final Menu menu;
-    private final StatisticsMenuHelper statisticsMenuHelper = new StatisticsMenuHelper();
+    private final StatisticsMenuHelper statisticsMenuHelper;
 
-    public StatisticsMenu() {
+    public StatisticsMenu(FlashcardStorage storage) {
+        this.statisticsMenuHelper = new StatisticsMenuHelper(storage);
         this.menu = new Menu("Statistiken");
         setupMenu();
     }

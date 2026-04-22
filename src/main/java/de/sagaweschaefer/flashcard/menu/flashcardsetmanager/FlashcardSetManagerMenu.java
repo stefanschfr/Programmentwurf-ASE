@@ -3,13 +3,14 @@ package de.sagaweschaefer.flashcard.menu.flashcardsetmanager;
 
 import de.sagaweschaefer.flashcard.menu.Menu;
 import de.sagaweschaefer.flashcard.menu.MenuItem;
+import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 
 public class FlashcardSetManagerMenu {
-
     private final Menu menu;
-    private final FlashcardSetManagerMenuHelper flashcardSetManagerMenuHelper = new FlashcardSetManagerMenuHelper();
+    private final FlashcardSetManagerMenuHelper flashcardSetManagerMenuHelper;
 
-    public FlashcardSetManagerMenu() {
+    public FlashcardSetManagerMenu(FlashcardStorage storage) {
+        this.flashcardSetManagerMenuHelper = new FlashcardSetManagerMenuHelper(storage);
         this.menu = new Menu("Flashcard Set Manager");
         setupMenu();
     }

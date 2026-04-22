@@ -101,6 +101,35 @@ public class Flashcard implements Serializable {
         this.options = options;
     }
 
+    public boolean checkAnswer(String answer) {
+        if (answer == null) return false;
+        
+        switch (questionType) {
+            case MULTIPLE_CHOICE:
+            case FREE_TEXT:
+                return answer.trim().equalsIgnoreCase(answerText.trim());
+            case TRUE_FALSE:
+                String normalizedAnswer = (answer.toLowerCase().startsWith("w")) ? "Wahr" : "Falsch";
+                return normalizedAnswer.equalsIgnoreCase(answerText);
+            case NUMERIC:
+                try {
+                    double val = Double.parseDouble(answer);
+                    return Math.abs(val - answerNum) < 0.001;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            default:
+                return false;
+        }
+    }
+
+    public String getCorrectAnswerDisplay() {
+        if (questionType == QuestionType.NUMERIC) {
+            return String.valueOf(answerNum);
+        }
+        return answerText;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

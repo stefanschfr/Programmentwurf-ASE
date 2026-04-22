@@ -5,7 +5,7 @@ import de.sagaweschaefer.flashcard.menu.flashcardmanager.FlashcardManagerMenuHel
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
-import de.sagaweschaefer.flashcard.util.JsonStorage;
+import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.List;
@@ -13,9 +13,10 @@ import java.util.Map;
 
 public class FlashcardSetManagerMenuHelper {
     private List<FlashcardSet> flashcardSets;
-    private final JsonStorage storage = new JsonStorage();
+    private final FlashcardStorage storage;
 
-    public FlashcardSetManagerMenuHelper() {
+    public FlashcardSetManagerMenuHelper(FlashcardStorage storage) {
+        this.storage = storage;
         this.flashcardSets = storage.loadFlashcardSets();
     }
 
@@ -76,7 +77,7 @@ public class FlashcardSetManagerMenuHelper {
         int choice = MenuUtils.promptForInt("Geben Sie die Nummer des Sets ein, das bearbeitet werden soll: ") - 1;
         if (choice >= 0 && choice < flashcardSets.size()) {
             var set = flashcardSets.get(choice);
-            var flashcardManagerHelper = new FlashcardManagerMenuHelper(set, flashcardSets);
+            var flashcardManagerHelper = new FlashcardManagerMenuHelper(set, flashcardSets, storage);
             new FlashcardManagerMenu(flashcardManagerHelper).start();
         } else {
             System.out.println("Ungültige Auswahl!");

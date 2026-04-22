@@ -2,7 +2,7 @@ package de.sagaweschaefer.flashcard.menu.flashcardcreation;
 
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
-import de.sagaweschaefer.flashcard.util.JsonStorage;
+import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.ArrayList;
@@ -11,11 +11,12 @@ import java.util.List;
 public class FlashcardCreationMenuHelper {
     private final FlashcardSet flashcardSet;
     private final List<FlashcardSet> allSets;
-    private final JsonStorage storage = new JsonStorage();
+    private final FlashcardStorage storage;
 
-    public FlashcardCreationMenuHelper(FlashcardSet flashcardSet, List<FlashcardSet> allSets) {
+    public FlashcardCreationMenuHelper(FlashcardSet flashcardSet, List<FlashcardSet> allSets, FlashcardStorage storage) {
         this.flashcardSet = flashcardSet;
         this.allSets = allSets;
+        this.storage = storage;
     }
 
     public void addFreeTextFlashcard() {

@@ -5,7 +5,7 @@ import de.sagaweschaefer.flashcard.menu.flashcardcreation.FlashcardCreationMenuH
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
-import de.sagaweschaefer.flashcard.util.JsonStorage;
+import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.List;
@@ -14,15 +14,16 @@ import java.util.Map;
 public class FlashcardManagerMenuHelper {
     private final FlashcardSet flashcardSet;
     private final List<FlashcardSet> allSets;
-    private final JsonStorage storage = new JsonStorage();
+    private final FlashcardStorage storage;
 
-    public FlashcardManagerMenuHelper(FlashcardSet flashcardSet, List<FlashcardSet> allSets) {
+    public FlashcardManagerMenuHelper(FlashcardSet flashcardSet, List<FlashcardSet> allSets, FlashcardStorage storage) {
         this.flashcardSet = flashcardSet;
         this.allSets = allSets;
+        this.storage = storage;
     }
 
     public void addFlashcard() {
-        FlashcardCreationMenuHelper creationHelper = new FlashcardCreationMenuHelper(flashcardSet, allSets);
+        FlashcardCreationMenuHelper creationHelper = new FlashcardCreationMenuHelper(flashcardSet, allSets, storage);
         FlashcardCreationMenu creationMenu = new FlashcardCreationMenu(creationHelper);
         creationMenu.start();
     }

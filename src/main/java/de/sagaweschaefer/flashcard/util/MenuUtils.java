@@ -47,7 +47,7 @@ public class MenuUtils {
                 FlashcardStatistics stats = (statistics != null) ? statistics.get(f.getId()) : null;
                 int level = (stats != null) ? stats.getLevel() : 0;
                 
-                String answer = (f.getAnswerNum() != null) ? String.valueOf(f.getAnswerNum()) : f.getAnswerText();
+                String answer = f.getCorrectAnswerDisplay();
                 
                 System.out.printf("%-3d | %-15s | %-30s | %-20s | %-10d%n", 
                         (i + 1), 

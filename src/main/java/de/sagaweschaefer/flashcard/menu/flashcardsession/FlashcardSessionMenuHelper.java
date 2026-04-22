@@ -3,7 +3,7 @@ package de.sagaweschaefer.flashcard.menu.flashcardsession;
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
-import de.sagaweschaefer.flashcard.util.JsonStorage;
+import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.Collections;
@@ -13,10 +13,12 @@ import java.util.Map;
 
 public class FlashcardSessionMenuHelper {
     private List<FlashcardSet> flashcardSets;
-    private final JsonStorage storage = new JsonStorage();
-    private final FlashcardSessionEngine engine = new FlashcardSessionEngine(storage);
+    private final FlashcardStorage storage;
+    private final FlashcardSessionEngine engine;
 
-    public FlashcardSessionMenuHelper() {
+    public FlashcardSessionMenuHelper(FlashcardStorage storage) {
+        this.storage = storage;
+        this.engine = new FlashcardSessionEngine(storage);
         refreshFlashcardSets();
     }
 
