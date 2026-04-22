@@ -21,6 +21,7 @@ public class JsonStorage {
     private static final String FILE_PATH = "data/flashcard-sets.json";
     private static final String STATISTICS_PATH = "data/flashcard-statistics.json";
     private static final String SESSION_RESULTS_PATH = "data/session-results.json";
+    private static final String EXAM_RESULTS_PATH = "data/exam-results.json";
     private final ObjectMapper objectMapper;
 
     public JsonStorage() {
@@ -41,6 +42,10 @@ public class JsonStorage {
 
     public void saveSessionResults(List<SessionResult> results) {
         saveToFile(SESSION_RESULTS_PATH, results);
+    }
+
+    public void saveExamResults(List<SessionResult> results) {
+        saveToFile(EXAM_RESULTS_PATH, results);
     }
 
     private void saveToFile(String path, Object object) {
@@ -87,7 +92,15 @@ public class JsonStorage {
     }
 
     public List<SessionResult> loadSessionResults() {
-        File file = new File(SESSION_RESULTS_PATH);
+        return loadResultsFromFile(SESSION_RESULTS_PATH);
+    }
+
+    public List<SessionResult> loadExamResults() {
+        return loadResultsFromFile(EXAM_RESULTS_PATH);
+    }
+
+    private List<SessionResult> loadResultsFromFile(String path) {
+        File file = new File(path);
         if (!file.exists()) {
             return new ArrayList<>();
         }
@@ -95,7 +108,7 @@ public class JsonStorage {
         try {
             return objectMapper.readValue(file, new TypeReference<List<SessionResult>>() {});
         } catch (IOException e) {
-            System.out.println("Error while loading session results: " + e.getMessage());
+            System.out.println("Error while loading results from " + path + ": " + e.getMessage());
             return new ArrayList<>();
         }
     }

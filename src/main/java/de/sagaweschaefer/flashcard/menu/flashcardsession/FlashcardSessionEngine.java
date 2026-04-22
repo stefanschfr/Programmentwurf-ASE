@@ -74,6 +74,12 @@ public class FlashcardSessionEngine {
         storage.saveSessionResults(results);
     }
 
+    private void saveExamResult(String sessionName, int correctCount, int totalCount, long durationMillis) {
+        List<SessionResult> results = storage.loadExamResults();
+        results.add(new SessionResult(sessionName, correctCount, totalCount, durationMillis));
+        storage.saveExamResults(results);
+    }
+
     public void runExamSession(List<Flashcard> examCards, String setName) {
         long startTime = System.currentTimeMillis();
         long limitMillis = 10 * 60 * 1000; // 10 Minuten
@@ -123,6 +129,8 @@ public class FlashcardSessionEngine {
             storage.saveStatistics(statisticsMap);
         }
         System.out.println("\n--- Prüfung beendet ---");
-        FlashcardSessionStatistics.displaySessionResult(correctCount, totalQuestions, System.currentTimeMillis() - startTime);
+        long duration = System.currentTimeMillis() - startTime;
+        saveExamResult(setName, correctCount, totalQuestions, duration);
+        FlashcardSessionStatistics.displaySessionResult(correctCount, totalQuestions, duration);
     }
 }

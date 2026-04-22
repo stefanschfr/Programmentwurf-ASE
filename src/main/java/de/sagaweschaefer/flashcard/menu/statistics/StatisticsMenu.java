@@ -18,6 +18,7 @@ public class StatisticsMenu {
         menu.addItem(2, new MenuItem("Statistik nach Lernkartenset anzeigen", statisticsMenuHelper::showSetStatistics));
         menu.addItem(3, new MenuItem("Statistik für einzelne Frage anzeigen", statisticsMenuHelper::showCardStatistics));
         menu.addItem(4, new MenuItem("Ergebnisse der letzten Lernsessions anzeigen", statisticsMenuHelper::showLastSessionResults));
+        menu.addItem(5, new MenuItem("Ergebnisse der letzten Prüfungen anzeigen", statisticsMenuHelper::showLastExamResults));
         menu.addItem(0, new MenuItem("Zurück zum Hauptmenü", () -> {}, true));
     }
 

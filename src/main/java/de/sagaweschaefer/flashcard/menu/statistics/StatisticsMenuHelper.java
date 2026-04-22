@@ -206,13 +206,20 @@ public class StatisticsMenuHelper {
     }
 
     public void showLastSessionResults() {
-        List<SessionResult> results = jsonStorage.loadSessionResults();
+        displayResults(jsonStorage.loadSessionResults(), "Lernsessions");
+    }
+
+    public void showLastExamResults() {
+        displayResults(jsonStorage.loadExamResults(), "Prüfungen");
+    }
+
+    private void displayResults(List<SessionResult> results, String type) {
         if (results.isEmpty()) {
-            System.out.println("Noch keine Lernsessions gespeichert.");
+            System.out.println("Noch keine " + type + " gespeichert.");
             return;
         }
 
-        System.out.println("\n--- Ergebnisse der letzten drei Lernsessions ---");
+        System.out.println("\n--- Ergebnisse der letzten drei " + type + " ---");
         Collections.reverse(results);
         int count = Math.min(3, results.size());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -220,7 +227,7 @@ public class StatisticsMenuHelper {
         for (int i = 0; i < count; i++) {
             SessionResult result = results.get(i);
             System.out.printf("%d. %s (%s)\n", i + 1, result.getSessionName(), result.getTimestamp().format(formatter));
-            System.out.printf("   Ergebnis: %d von %d richtig (%.2f%%)\n", 
+            System.out.printf("   Ergebnis: %d von %d richtig (%.2f%%)\n",
                 result.getCorrectCount(), result.getTotalCount(), result.getPercentage());
             if (result.getTotalCount() > 0) {
                 System.out.println("   Erreichte Note: " + de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionStatistics.calculateGrade(result.getPercentage()));
