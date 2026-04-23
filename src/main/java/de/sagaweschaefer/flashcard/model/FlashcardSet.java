@@ -1,11 +1,13 @@
 package de.sagaweschaefer.flashcard.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FlashcardSet implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String name;
@@ -25,12 +27,12 @@ public class FlashcardSet implements Serializable {
         return name;
     }
 
-    public List<Flashcard> getFlashcardSet() {
-        return flashcardSet;
-    }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Flashcard> getFlashcardSet() {
+        return flashcardSet;
     }
 
     public void setFlashcardSet(List<Flashcard> flashcardSet) {

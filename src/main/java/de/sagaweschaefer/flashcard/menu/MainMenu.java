@@ -18,6 +18,11 @@ public class MainMenu {
         setupMenu();
     }
 
+    public static void main(String[] args) {
+        new MainMenu().start();
+        AppScanner.SCANNER.close();
+    }
+
     private void setupMenu() {
         menu.addItem(1, new MenuItem("Flashcard Set Manager öffnen", flashcardSetManagerMenu::start));
         menu.addItem(2, new MenuItem("Lernsession starten", flashcardSessionMenu::start));
@@ -27,10 +32,5 @@ public class MainMenu {
 
     public void start() {
         menu.start();
-    }
-
-    public static void main(String[] args) {
-        new MainMenu().start();
-        AppScanner.SCANNER.close();
     }
 }

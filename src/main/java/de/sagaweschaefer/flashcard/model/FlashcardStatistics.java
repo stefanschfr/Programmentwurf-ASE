@@ -2,11 +2,14 @@ package de.sagaweschaefer.flashcard.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FlashcardStatistics implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String flashcardId;
@@ -15,7 +18,8 @@ public class FlashcardStatistics implements Serializable {
     private int wrongCount;
     private int level;
 
-    public FlashcardStatistics() {}
+    public FlashcardStatistics() {
+    }
 
     public FlashcardStatistics(String flashcardId) {
         this.flashcardId = flashcardId;
@@ -94,21 +98,14 @@ public class FlashcardStatistics implements Serializable {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        switch (level) {
-            case 1:
-                return lastCorrectAt.plusMinutes(1).isBefore(now);
-            case 2:
-                return lastCorrectAt.plusMinutes(10).isBefore(now);
-            case 3:
-                return lastCorrectAt.plusHours(5).isBefore(now);
-            case 4:
-                return lastCorrectAt.plusDays(1).isBefore(now);
-            case 5:
-                return lastCorrectAt.plusDays(14).isBefore(now);
-            case 6:
-                return lastCorrectAt.plusMonths(1).isBefore(now);
-            default:
-                return true;
-        }
+        return switch (level) {
+            case 1 -> lastCorrectAt.plusMinutes(1).isBefore(now);
+            case 2 -> lastCorrectAt.plusMinutes(10).isBefore(now);
+            case 3 -> lastCorrectAt.plusHours(5).isBefore(now);
+            case 4 -> lastCorrectAt.plusDays(1).isBefore(now);
+            case 5 -> lastCorrectAt.plusDays(14).isBefore(now);
+            case 6 -> lastCorrectAt.plusMonths(1).isBefore(now);
+            default -> true;
+        };
     }
 }
