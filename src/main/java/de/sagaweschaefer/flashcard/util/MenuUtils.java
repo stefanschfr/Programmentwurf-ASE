@@ -1,7 +1,9 @@
 package de.sagaweschaefer.flashcard.util;
+
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
+
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +47,7 @@ public class MenuUtils {
         if (index >= 0 && index < list.size()) {
             return list.get(index);
         }
+        System.out.println("Ungültige Auswahl.");
         return null;
     }
 
@@ -56,6 +59,7 @@ public class MenuUtils {
         if (index >= 0 && index < list.size()) {
             return index;
         }
+        System.out.println("Ungültige Auswahl.");
         return -1;
     }
 
@@ -81,14 +85,14 @@ public class MenuUtils {
                 Flashcard f = cards.get(i);
                 FlashcardStatistics stats = (statistics != null) ? statistics.get(f.getId()) : null;
                 int level = (stats != null) ? stats.getLevel() : 0;
-                
+
                 String answer = f.getCorrectAnswerDisplay();
-                
-                System.out.printf("%-3d | %-15s | %-30s | %-20s | %-10d%n", 
-                        (i + 1), 
-                        f.getQuestionType().getDisplayName(), 
-                        truncate(f.getQuestion(), 30), 
-                        truncate(answer, 20), 
+
+                System.out.printf("%-3d | %-15s | %-30s | %-20s | %-10d%n",
+                        (i + 1),
+                        f.getQuestionType().getDisplayName(),
+                        truncate(f.getQuestion(), 30),
+                        truncate(answer, 20),
                         level);
             }
         }

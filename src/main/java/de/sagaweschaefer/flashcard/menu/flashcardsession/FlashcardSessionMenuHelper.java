@@ -6,15 +6,15 @@ import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 public class FlashcardSessionMenuHelper {
-    private List<FlashcardSet> flashcardSets;
     private final FlashcardStorage storage;
     private final FlashcardSessionEngine engine;
+    private List<FlashcardSet> flashcardSets;
 
     public FlashcardSessionMenuHelper(FlashcardStorage storage) {
         this.storage = storage;
@@ -35,26 +35,23 @@ public class FlashcardSessionMenuHelper {
 
         MenuUtils.displayFlashcardSets(flashcardSets, "Verfügbare Lernkartensets");
         FlashcardSet set = MenuUtils.selectFromList(flashcardSets, "Wähle ein Lernkartenset (Nummer): ");
+        if (set == null) return;
 
-        if (set != null) {
-            Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
-            List<Flashcard> cardsToLearn = new ArrayList<>();
-            for (Flashcard card : set.getFlashcardSet()) {
-                FlashcardStatistics stats = statisticsMap.get(card.getId());
-                if (stats == null || stats.getLevel() < 6) {
-                    cardsToLearn.add(card);
-                }
+        Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
+        List<Flashcard> cardsToLearn = new ArrayList<>();
+        for (Flashcard card : set.getFlashcards()) {
+            FlashcardStatistics stats = statisticsMap.get(card.getId());
+            if (stats == null || stats.getLevel() < 6) {
+                cardsToLearn.add(card);
             }
-            
-            if (cardsToLearn.isEmpty()) {
-                System.out.println("Alle Karten in diesem Set sind bereits vollständig gelernt (Stufe 6)!");
-                return;
-            }
-            
-            engine.runSession(cardsToLearn, set.getName());
-        } else {
-            System.out.println("Ungültige Auswahl.");
         }
+
+        if (cardsToLearn.isEmpty()) {
+            System.out.println("Alle Karten in diesem Set sind bereits vollständig gelernt (Stufe 6)!");
+            return;
+        }
+
+        engine.runSession(cardsToLearn, set.getName());
     }
 
     public void startWrongAnswersSession() {
@@ -68,7 +65,7 @@ public class FlashcardSessionMenuHelper {
         List<Flashcard> wrongAnswers = new ArrayList<>();
 
         for (FlashcardSet set : flashcardSets) {
-            for (Flashcard card : set.getFlashcardSet()) {
+            for (Flashcard card : set.getFlashcards()) {
                 FlashcardStatistics stats = statisticsMap.get(card.getId());
                 if (stats != null && stats.getLevel() == 0) {
                     wrongAnswers.add(card);
@@ -95,7 +92,7 @@ public class FlashcardSessionMenuHelper {
         List<Flashcard> dueCards = new ArrayList<>();
 
         for (FlashcardSet set : flashcardSets) {
-            for (Flashcard card : set.getFlashcardSet()) {
+            for (Flashcard card : set.getFlashcards()) {
                 FlashcardStatistics stats = statisticsMap.get(card.getId());
                 if (stats == null || stats.isDue()) {
                     dueCards.add(card);
@@ -120,21 +117,18 @@ public class FlashcardSessionMenuHelper {
 
         MenuUtils.displayFlashcardSets(flashcardSets, "Verfügbare Lernkartensets");
         FlashcardSet set = MenuUtils.selectFromList(flashcardSets, "Wähle ein Lernkartenset für die Prüfung (Nummer): ");
+        if (set == null) return;
 
-        if (set != null) {
-            List<Flashcard> allCards = new ArrayList<>(set.getFlashcardSet());
-            
-            if (allCards.size() < 10) {
-                System.out.println("Das gewählte Set enthält nur " + allCards.size() + " Karten. Für den Prüfungsmodus sind mindestens 10 Karten erforderlich.");
-                return;
-            }
+        List<Flashcard> allCards = new ArrayList<>(set.getFlashcards());
 
-            Collections.shuffle(allCards);
-            List<Flashcard> examCards = allCards.subList(0, 10);
-            
-            engine.runExamSession(examCards, set.getName());
-        } else {
-            System.out.println("Ungültige Auswahl.");
+        if (allCards.size() < 10) {
+            System.out.println("Das gewählte Set enthält nur " + allCards.size() + " Karten. Für den Prüfungsmodus sind mindestens 10 Karten erforderlich.");
+            return;
         }
+
+        Collections.shuffle(allCards);
+        List<Flashcard> examCards = allCards.subList(0, 10);
+
+        engine.runExamSession(examCards, set.getName());
     }
 }

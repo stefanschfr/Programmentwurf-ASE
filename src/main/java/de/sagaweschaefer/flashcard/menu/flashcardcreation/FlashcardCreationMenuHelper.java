@@ -54,7 +54,7 @@ public class FlashcardCreationMenuHelper {
     }
 
     private void addFlashcard(Flashcard flashcard) {
-        flashcardSet.getFlashcardSet().add(flashcard);
+        flashcardSet.getFlashcards().add(flashcard);
         save();
         System.out.println("Frage erfolgreich hinzugefügt!");
     }

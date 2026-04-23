@@ -10,27 +10,13 @@ import java.util.Map;
 
 public class StatisticsCalculator {
 
-    public static class GeneralStats {
-        public int totalSets;
-        public int totalQuestions;
-        public int totalCorrect;
-        public int totalWrong;
-        public int neverAnswered;
-        public int dueCards;
-        public int[] levelDistribution = new int[7];
-        public double averageLevel;
-        public double correctPercentage;
-        public String mostFrequentQuestion = "N/A";
-        public int mostFrequentCount = 0;
-    }
-
     public static GeneralStats calculateGeneralStats(List<FlashcardSet> sets, Map<String, FlashcardStatistics> statsMap) {
         GeneralStats stats = new GeneralStats();
         stats.totalSets = sets.size();
 
         Map<String, String> idToQuestionMap = new HashMap<>();
         for (FlashcardSet set : sets) {
-            for (Flashcard card : set.getFlashcardSet()) {
+            for (Flashcard card : set.getFlashcards()) {
                 stats.totalQuestions++;
                 idToQuestionMap.put(card.getId(), card.getQuestion());
             }
@@ -82,5 +68,19 @@ public class StatisticsCalculator {
         stats.averageLevel = stats.totalQuestions > 0 ? totalLevel / stats.totalQuestions : 0;
 
         return stats;
+    }
+
+    public static class GeneralStats {
+        public int totalSets;
+        public int totalQuestions;
+        public int totalCorrect;
+        public int totalWrong;
+        public int neverAnswered;
+        public int dueCards;
+        public int[] levelDistribution = new int[7];
+        public double averageLevel;
+        public double correctPercentage;
+        public String mostFrequentQuestion = "N/A";
+        public int mostFrequentCount = 0;
     }
 }

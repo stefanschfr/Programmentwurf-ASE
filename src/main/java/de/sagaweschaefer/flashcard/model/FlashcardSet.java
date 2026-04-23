@@ -11,16 +11,16 @@ public class FlashcardSet implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
-    private List<Flashcard> flashcardSet;
+    private List<Flashcard> flashcards;
 
     public FlashcardSet() {
-        this.flashcardSet = new ArrayList<>();
+        this.flashcards = new ArrayList<>();
     }
 
     // Konstruktor mit Namen
     public FlashcardSet(String name) {
         this.name = name;
-        this.flashcardSet = new ArrayList<>();
+        this.flashcards = new ArrayList<>();
     }
 
     public String getName() {
@@ -31,11 +31,11 @@ public class FlashcardSet implements Serializable {
         this.name = name;
     }
 
-    public List<Flashcard> getFlashcardSet() {
-        return flashcardSet;
+    public List<Flashcard> getFlashcards() {
+        return flashcards;
     }
 
-    public void setFlashcardSet(List<Flashcard> flashcardSet) {
-        this.flashcardSet = flashcardSet;
+    public void setFlashcards(List<Flashcard> flashcards) {
+        this.flashcards = flashcards;
     }
 }

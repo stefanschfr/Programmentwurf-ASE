@@ -40,18 +40,20 @@ public class FlashcardSetManagerMenuHelper {
         if (index != -1) {
             performDelete(index);
             storage.saveFlashcardSets(flashcardSets);
-        } else {
-            System.out.println("Ungültige Auswahl! Kein Set gelöscht.");
         }
     }
 
     private void performDelete(int index) {
         FlashcardSet removed = flashcardSets.remove(index);
+        cleanupOrphanedFlashcardSetStatistics(removed);
 
-        // Verwaiste Statistiken für alle Karten im Set entfernen
+        System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
+    }
+
+    private void cleanupOrphanedFlashcardSetStatistics(FlashcardSet removed) {
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         boolean statsChanged = false;
-        for (Flashcard card : removed.getFlashcardSet()) {
+        for (Flashcard card : removed.getFlashcards()) {
             if (statisticsMap.remove(card.getId()) != null) {
                 statsChanged = true;
             }
@@ -59,8 +61,6 @@ public class FlashcardSetManagerMenuHelper {
         if (statsChanged) {
             storage.saveStatistics(statisticsMap);
         }
-
-        System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
     }
 
     public void editFlashcardSet() {
@@ -71,8 +71,6 @@ public class FlashcardSetManagerMenuHelper {
         if (set != null) {
             var flashcardManagerHelper = new FlashcardManagerMenuHelper(set, flashcardSets, storage);
             new FlashcardManagerMenu(flashcardManagerHelper, set.getName()).start();
-        } else {
-            System.out.println("Ungültige Auswahl!");
         }
     }
 }

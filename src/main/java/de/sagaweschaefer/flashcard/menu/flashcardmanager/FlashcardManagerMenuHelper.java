@@ -30,29 +30,28 @@ public class FlashcardManagerMenuHelper {
 
     public void listFlashcards() {
         Map<String, FlashcardStatistics> statistics = storage.loadStatistics();
-        MenuUtils.displayFlashcards(flashcardSet.getFlashcardSet(), statistics, "Fragen in '" + flashcardSet.getName() + "'");
+        MenuUtils.displayFlashcards(flashcardSet.getFlashcards(), statistics, "Fragen in '" + flashcardSet.getName() + "'");
     }
 
     public void deleteFlashcard() {
         listFlashcards();
-        List<Flashcard> flashcards = flashcardSet.getFlashcardSet();
+        List<Flashcard> flashcards = flashcardSet.getFlashcards();
         if (flashcards.isEmpty()) return;
 
         int index = MenuUtils.selectIndexFromList(flashcards, "Geben Sie die Nummer der Frage ein, die gelöscht werden soll: ");
-        if (index == -1) {
-            System.out.println("Ungültige Auswahl! Keine Frage gelöscht.");
-            return;
-        }
+        if (index == -1) return;
 
         Flashcard removed = flashcards.remove(index);
+        cleanupOrphanedFlashcardStatistics(removed);
 
-        // Verwaiste Statistiken entfernen
+        storage.saveFlashcardSets(allSets);
+        System.out.println("Frage '" + removed.getQuestion() + "' wurde gelöscht.");
+    }
+
+    private void cleanupOrphanedFlashcardStatistics(Flashcard removed) {
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         if (statisticsMap.remove(removed.getId()) != null) {
             storage.saveStatistics(statisticsMap);
         }
-
-        storage.saveFlashcardSets(allSets);
-        System.out.println("Frage '" + removed.getQuestion() + "' wurde gelöscht.");
     }
 }
