@@ -3,7 +3,7 @@ package de.sagaweschaefer.flashcard.menu.flashcardsession;
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.model.SessionResult;
-import de.sagaweschaefer.flashcard.util.FlashcardStorage;
+import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ import java.util.Map;
 public class FlashcardSessionEngine {
     private static final long EXAM_TIME_LIMIT_MILLIS = 10 * 60 * 1000; // 10 Minuten
 
-    private final FlashcardStorage storage;
+    private final JsonStorage storage;
 
-    public FlashcardSessionEngine(FlashcardStorage storage) {
+    public FlashcardSessionEngine(JsonStorage storage) {
         this.storage = storage;
     }
 
@@ -28,7 +28,7 @@ public class FlashcardSessionEngine {
 
         List<Flashcard> cards = new ArrayList<>(cardsToUse);
         Collections.shuffle(cards);
-        
+
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         long startTime = System.currentTimeMillis();
         int correctCount = 0;
@@ -50,11 +50,11 @@ public class FlashcardSessionEngine {
     private boolean processCardInSession(Flashcard card, Map<String, FlashcardStatistics> statisticsMap) {
         FlashcardStatistics stats = statisticsMap.computeIfAbsent(card.getId(), FlashcardStatistics::new);
         boolean wasDue = stats.isDue();
-        
+
         if (FlashcardQuestionHelper.askQuestion(card)) {
             System.out.println("Richtig!");
             stats.incrementCorrect();
-            
+
             displayRatingOptions(wasDue);
             int rating = MenuUtils.promptForInt("Deine Wahl: ");
             stats.applyRating(rating, wasDue);

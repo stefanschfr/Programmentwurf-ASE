@@ -28,7 +28,4 @@ public class FlashcardQuestionHelper {
         return card.checkAnswer(answer);
     }
 
-    public static String getCorrectAnswerDisplay(Flashcard card) {
-        return card.getCorrectAnswerDisplay();
-    }
 }

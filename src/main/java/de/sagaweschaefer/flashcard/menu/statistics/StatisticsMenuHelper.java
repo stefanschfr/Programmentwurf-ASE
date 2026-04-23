@@ -5,7 +5,7 @@ import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.model.SessionResult;
-import de.sagaweschaefer.flashcard.util.FlashcardStorage;
+import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 import de.sagaweschaefer.flashcard.util.StatisticsCalculator;
 
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 public class StatisticsMenuHelper {
-    private final FlashcardStorage storage;
+    private final JsonStorage storage;
 
-    public StatisticsMenuHelper(FlashcardStorage storage) {
+    public StatisticsMenuHelper(JsonStorage storage) {
         this.storage = storage;
     }
 

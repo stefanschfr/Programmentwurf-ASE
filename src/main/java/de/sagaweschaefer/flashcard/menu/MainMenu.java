@@ -4,12 +4,11 @@ import de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionMenu;
 import de.sagaweschaefer.flashcard.menu.flashcardsetmanager.FlashcardSetManagerMenu;
 import de.sagaweschaefer.flashcard.menu.statistics.StatisticsMenu;
 import de.sagaweschaefer.flashcard.util.AppScanner;
-import de.sagaweschaefer.flashcard.util.FlashcardStorage;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
 
 public class MainMenu {
     private final Menu menu;
-    private final FlashcardStorage storage = new JsonStorage();
+    private final JsonStorage storage = new JsonStorage();
     private final FlashcardSetManagerMenu flashcardSetManagerMenu = new FlashcardSetManagerMenu(storage);
     private final FlashcardSessionMenu flashcardSessionMenu = new FlashcardSessionMenu(storage);
     private final StatisticsMenu statisticsMenu = new StatisticsMenu(storage);

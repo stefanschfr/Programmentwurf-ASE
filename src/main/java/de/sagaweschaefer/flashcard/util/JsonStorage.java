@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JsonStorage implements FlashcardStorage {
+public class JsonStorage {
 
     private static final String FILE_PATH = "data/flashcard-sets.json";
     private static final String STATISTICS_PATH = "data/flashcard-statistics.json";

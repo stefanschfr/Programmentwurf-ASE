@@ -5,17 +5,17 @@ import de.sagaweschaefer.flashcard.menu.flashcardmanager.FlashcardManagerMenuHel
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
-import de.sagaweschaefer.flashcard.util.FlashcardStorage;
+import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.List;
 import java.util.Map;
 
 public class FlashcardSetManagerMenuHelper {
-    private final FlashcardStorage storage;
+    private final JsonStorage storage;
     private final List<FlashcardSet> flashcardSets;
 
-    public FlashcardSetManagerMenuHelper(FlashcardStorage storage) {
+    public FlashcardSetManagerMenuHelper(JsonStorage storage) {
         this.storage = storage;
         this.flashcardSets = storage.loadFlashcardSets();
     }
