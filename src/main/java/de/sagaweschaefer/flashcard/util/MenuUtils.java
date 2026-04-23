@@ -1,7 +1,9 @@
 package de.sagaweschaefer.flashcard.util;
+
 import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +24,43 @@ public class MenuUtils {
     public static int promptForInt(String prompt) {
         System.out.print(prompt);
         return readMenuSelection();
+    }
+
+    public static double promptForDouble(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = AppScanner.SCANNER.nextLine();
+
+            try {
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Ungültige Zahl! Bitte erneut eingeben.");
+            }
+        }
+    }
+
+    public static <T> T selectFromList(List<T> list, String prompt) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        int index = promptForInt(prompt) - 1;
+        if (index >= 0 && index < list.size()) {
+            return list.get(index);
+        }
+        System.out.println("Ungültige Auswahl.");
+        return null;
+    }
+
+    public static <T> int selectIndexFromList(List<T> list, String prompt) {
+        if (list == null || list.isEmpty()) {
+            return -1;
+        }
+        int index = promptForInt(prompt) - 1;
+        if (index >= 0 && index < list.size()) {
+            return index;
+        }
+        System.out.println("Ungültige Auswahl.");
+        return -1;
     }
 
     public static void displayFlashcardSets(List<FlashcardSet> sets, String title) {
@@ -46,14 +85,14 @@ public class MenuUtils {
                 Flashcard f = cards.get(i);
                 FlashcardStatistics stats = (statistics != null) ? statistics.get(f.getId()) : null;
                 int level = (stats != null) ? stats.getLevel() : 0;
-                
-                String answer = (f.getAnswerNum() != null) ? String.valueOf(f.getAnswerNum()) : f.getAnswerText();
-                
-                System.out.printf("%-3d | %-15s | %-30s | %-20s | %-10d%n", 
-                        (i + 1), 
-                        f.getQuestionType().getDisplayName(), 
-                        truncate(f.getQuestion(), 30), 
-                        truncate(answer, 20), 
+
+                String answer = f.getCorrectAnswerDisplay();
+
+                System.out.printf("%-3d | %-15s | %-30s | %-20s | %-10d%n",
+                        (i + 1),
+                        f.getQuestionType().getDisplayName(),
+                        truncate(f.getQuestion(), 30),
+                        truncate(answer, 20),
                         level);
             }
         }

@@ -15,30 +15,17 @@ public class FlashcardQuestionHelper {
             for (int i = 0; i < options.size(); i++) {
                 System.out.println((i + 1) + ". " + options.get(i));
             }
-            String answer = MenuUtils.promptForString("Deine Antwort (Text): ");
-            return answer.equalsIgnoreCase(card.getAnswerText());
-        } else if (card.getQuestionType() == QuestionType.TRUE_FALSE) {
-            String answer = MenuUtils.promptForString("Wahr (w) oder Falsch (f)? ");
-            String normalizedAnswer = (answer.toLowerCase().startsWith("w")) ? "Wahr" : "Falsch";
-            return normalizedAnswer.equalsIgnoreCase(card.getAnswerText());
-        } else if (card.getQuestionType() == QuestionType.NUMERIC) {
-            String input = MenuUtils.promptForString("Deine Antwort (Zahl): ");
-            try {
-                double val = Double.parseDouble(input);
-                return Math.abs(val - card.getAnswerNum()) < 0.001;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        } else { // FREE_TEXT
-            String answer = MenuUtils.promptForString("Deine Antwort: ");
-            return answer.trim().equalsIgnoreCase(card.getAnswerText().trim());
         }
+
+        String prompt = "Deine Antwort";
+        switch (card.getQuestionType()) {
+            case TRUE_FALSE: prompt += " (Wahr (w) / Falsch (f))"; break;
+            case NUMERIC: prompt += " (Zahl)"; break;
+            default: prompt += " (Text)"; break;
+        }
+        
+        String answer = MenuUtils.promptForString(prompt + ": ");
+        return card.checkAnswer(answer);
     }
 
-    public static String getCorrectAnswerDisplay(Flashcard card) {
-        if (card.getQuestionType() == QuestionType.NUMERIC) {
-            return String.valueOf(card.getAnswerNum());
-        }
-        return card.getAnswerText();
-    }
 }

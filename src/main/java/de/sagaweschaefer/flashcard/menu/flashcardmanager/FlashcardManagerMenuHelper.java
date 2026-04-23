@@ -14,52 +14,44 @@ import java.util.Map;
 public class FlashcardManagerMenuHelper {
     private final FlashcardSet flashcardSet;
     private final List<FlashcardSet> allSets;
-    private final JsonStorage storage = new JsonStorage();
+    private final JsonStorage storage;
 
-    public FlashcardManagerMenuHelper(FlashcardSet flashcardSet, List<FlashcardSet> allSets) {
+    public FlashcardManagerMenuHelper(FlashcardSet flashcardSet, List<FlashcardSet> allSets, JsonStorage storage) {
         this.flashcardSet = flashcardSet;
         this.allSets = allSets;
+        this.storage = storage;
     }
 
     public void addFlashcard() {
-        FlashcardCreationMenuHelper creationHelper = new FlashcardCreationMenuHelper(flashcardSet, allSets);
+        FlashcardCreationMenuHelper creationHelper = new FlashcardCreationMenuHelper(flashcardSet, allSets, storage);
         FlashcardCreationMenu creationMenu = new FlashcardCreationMenu(creationHelper);
         creationMenu.start();
     }
 
     public void listFlashcards() {
         Map<String, FlashcardStatistics> statistics = storage.loadStatistics();
-        MenuUtils.displayFlashcards(flashcardSet.getFlashcardSet(), statistics, "Fragen in '" + flashcardSet.getName() + "'");
+        MenuUtils.displayFlashcards(flashcardSet.getFlashcards(), statistics, "Fragen in '" + flashcardSet.getName() + "'");
     }
 
     public void deleteFlashcard() {
         listFlashcards();
-        if (flashcardSet.getFlashcardSet().isEmpty()) return;
+        List<Flashcard> flashcards = flashcardSet.getFlashcards();
+        if (flashcards.isEmpty()) return;
 
-        int index = MenuUtils.promptForInt("Geben Sie die Nummer der Frage ein, die gelöscht werden soll: ") - 1;
-        List<Flashcard> flashcards = flashcardSet.getFlashcardSet();
-        if (index < 0 || index >= flashcards.size()) {
-            System.out.println("Ungültige Auswahl! Keine Frage gelöscht.");
-            return;
-        }
+        int index = MenuUtils.selectIndexFromList(flashcards, "Geben Sie die Nummer der Frage ein, die gelöscht werden soll: ");
+        if (index == -1) return;
 
         Flashcard removed = flashcards.remove(index);
-        
-        // Verwaiste Statistiken entfernen
+        cleanupOrphanedFlashcardStatistics(removed);
+
+        storage.saveFlashcardSets(allSets);
+        System.out.println("Frage '" + removed.getQuestion() + "' wurde gelöscht.");
+    }
+
+    private void cleanupOrphanedFlashcardStatistics(Flashcard removed) {
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         if (statisticsMap.remove(removed.getId()) != null) {
             storage.saveStatistics(statisticsMap);
         }
-
-        save();
-        System.out.println("Frage '" + removed.getQuestion() + "' wurde gelöscht.");
-    }
-
-    private void save() {
-        storage.saveFlashcardSets(allSets);
-    }
-
-    public FlashcardSet getFlashcardSet() {
-        return flashcardSet;
     }
 }

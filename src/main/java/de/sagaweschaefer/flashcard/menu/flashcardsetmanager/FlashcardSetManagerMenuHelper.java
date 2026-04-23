@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 public class FlashcardSetManagerMenuHelper {
-    private List<FlashcardSet> flashcardSets;
-    private final JsonStorage storage = new JsonStorage();
+    private final JsonStorage storage;
+    private final List<FlashcardSet> flashcardSets;
 
-    public FlashcardSetManagerMenuHelper() {
+    public FlashcardSetManagerMenuHelper(JsonStorage storage) {
+        this.storage = storage;
         this.flashcardSets = storage.loadFlashcardSets();
     }
 
     public void addFlashcardSet() {
-        this.flashcardSets = storage.loadFlashcardSets();
         String name = MenuUtils.promptForString("Name des Lernkartensets: ");
         FlashcardSet set = new FlashcardSet(name);
         flashcardSets.add(set);
@@ -29,33 +29,31 @@ public class FlashcardSetManagerMenuHelper {
     }
 
     public void listFlashcardSets() {
-        this.flashcardSets = storage.loadFlashcardSets();
         MenuUtils.displayFlashcardSets(flashcardSets, "Alle Lernkartensets");
     }
 
     public void deleteFlashcardSet() {
-        this.flashcardSets = storage.loadFlashcardSets();
         listFlashcardSets();
         if (flashcardSets.isEmpty()) return;
 
-        int index = MenuUtils.promptForInt("Geben Sie die Nummer des Sets ein, das gelöscht werden soll: ") - 1;
-        if (validateAndPerformDelete(index)) {
+        int index = MenuUtils.selectIndexFromList(flashcardSets, "Geben Sie die Nummer des Sets ein, das gelöscht werden soll: ");
+        if (index != -1) {
+            performDelete(index);
             storage.saveFlashcardSets(flashcardSets);
         }
     }
 
-    private boolean validateAndPerformDelete(int index) {
-        if (index < 0 || index >= flashcardSets.size()) {
-            System.out.println("Ungültige Auswahl! Kein Set gelöscht.");
-            return false;
-        }
-
+    private void performDelete(int index) {
         FlashcardSet removed = flashcardSets.remove(index);
-        
-        // Verwaiste Statistiken für alle Karten im Set entfernen
+        cleanupOrphanedFlashcardSetStatistics(removed);
+
+        System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
+    }
+
+    private void cleanupOrphanedFlashcardSetStatistics(FlashcardSet removed) {
         Map<String, FlashcardStatistics> statisticsMap = storage.loadStatistics();
         boolean statsChanged = false;
-        for (Flashcard card : removed.getFlashcardSet()) {
+        for (Flashcard card : removed.getFlashcards()) {
             if (statisticsMap.remove(card.getId()) != null) {
                 statsChanged = true;
             }
@@ -63,23 +61,16 @@ public class FlashcardSetManagerMenuHelper {
         if (statsChanged) {
             storage.saveStatistics(statisticsMap);
         }
-
-        System.out.println("Lernkartenset '" + removed.getName() + "' wurde gelöscht.");
-        return true;
     }
 
     public void editFlashcardSet() {
-        this.flashcardSets = storage.loadFlashcardSets();
         listFlashcardSets();
         if (flashcardSets.isEmpty()) return;
 
-        int choice = MenuUtils.promptForInt("Geben Sie die Nummer des Sets ein, das bearbeitet werden soll: ") - 1;
-        if (choice >= 0 && choice < flashcardSets.size()) {
-            var set = flashcardSets.get(choice);
-            var flashcardManagerHelper = new FlashcardManagerMenuHelper(set, flashcardSets);
-            new FlashcardManagerMenu(flashcardManagerHelper).start();
-        } else {
-            System.out.println("Ungültige Auswahl!");
+        FlashcardSet set = MenuUtils.selectFromList(flashcardSets, "Geben Sie die Nummer des Sets ein, das bearbeitet werden soll: ");
+        if (set != null) {
+            var flashcardManagerHelper = new FlashcardManagerMenuHelper(set, flashcardSets, storage);
+            new FlashcardManagerMenu(flashcardManagerHelper, set.getName()).start();
         }
     }
 }

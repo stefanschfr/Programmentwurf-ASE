@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import de.sagaweschaefer.flashcard.model.Flashcard;
 import de.sagaweschaefer.flashcard.model.FlashcardSet;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.model.SessionResult;
@@ -69,7 +68,8 @@ public class JsonStorage {
         }
 
         try {
-            return objectMapper.readValue(file, new TypeReference<List<FlashcardSet>>() {});
+            return objectMapper.readValue(file, new TypeReference<List<FlashcardSet>>() {
+            });
         } catch (IOException e) {
             System.out.println("Error while loading flashcard sets: " + e.getMessage());
             return new ArrayList<>();
@@ -84,7 +84,8 @@ public class JsonStorage {
         }
 
         try {
-            return objectMapper.readValue(file, new TypeReference<Map<String, FlashcardStatistics>>() {});
+            return objectMapper.readValue(file, new TypeReference<Map<String, FlashcardStatistics>>() {
+            });
         } catch (IOException e) {
             System.out.println("Error while loading statistics: " + e.getMessage());
             return new HashMap<>();
@@ -106,7 +107,8 @@ public class JsonStorage {
         }
 
         try {
-            return objectMapper.readValue(file, new TypeReference<List<SessionResult>>() {});
+            return objectMapper.readValue(file, new TypeReference<List<SessionResult>>() {
+            });
         } catch (IOException e) {
             System.out.println("Error while loading results from " + path + ": " + e.getMessage());
             return new ArrayList<>();
