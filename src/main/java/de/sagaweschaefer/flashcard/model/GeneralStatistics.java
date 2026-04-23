@@ -5,21 +5,27 @@ import java.util.Map;
 
 public class GeneralStatistics extends BaseStatistics {
     private final int totalSets;
-    private final int neverAnswered;
-    private final double averageLevel;
     private final String mostFrequentQuestion;
     private final int mostFrequentCount;
+    private final String bestSetName;
+    private final double bestSetPercentage;
+    private final String worstSetName;
+    private final double worstSetPercentage;
 
     private GeneralStatistics(int totalSets, int totalQuestions, int totalCorrect, int totalWrong,
                               int neverAnswered, int dueCards, int[] levelDistribution,
                               double averageLevel, double correctPercentage,
-                              String mostFrequentQuestion, int mostFrequentCount) {
-        super(totalQuestions, totalCorrect, totalWrong, dueCards, levelDistribution, correctPercentage);
+                              String mostFrequentQuestion, int mostFrequentCount,
+                              String bestSetName, double bestSetPercentage,
+                              String worstSetName, double worstSetPercentage) {
+        super(totalQuestions, totalCorrect, totalWrong, dueCards, levelDistribution, correctPercentage, averageLevel, neverAnswered);
         this.totalSets = totalSets;
-        this.neverAnswered = neverAnswered;
-        this.averageLevel = averageLevel;
         this.mostFrequentQuestion = mostFrequentQuestion;
         this.mostFrequentCount = mostFrequentCount;
+        this.bestSetName = bestSetName;
+        this.bestSetPercentage = bestSetPercentage;
+        this.worstSetName = worstSetName;
+        this.worstSetPercentage = worstSetPercentage;
     }
 
     public static GeneralStatistics calculate(List<FlashcardSet> sets, Map<String, FlashcardStatistics> statsMap) {
@@ -62,9 +68,30 @@ public class GeneralStatistics extends BaseStatistics {
         double correctPercentage = calculatePercentage(totalCorrect, totalWrong);
         double averageLevel = totalQuestions > 0 ? totalLevel / totalQuestions : 0;
 
+        String bestSetName = "N/A";
+        double bestSetPercentage = -1;
+        String worstSetName = "N/A";
+        double worstSetPercentage = 101;
+
+        for (FlashcardSet set : sets) {
+            FlashcardSetStatistics setStats = FlashcardSetStatistics.calculate(set, statsMap);
+            if (setStats.getTotalCorrect() + setStats.getTotalWrong() > 0) {
+                double perc = setStats.getCorrectPercentage();
+                if (perc > bestSetPercentage) {
+                    bestSetPercentage = perc;
+                    bestSetName = set.getName();
+                }
+                if (perc < worstSetPercentage) {
+                    worstSetPercentage = perc;
+                    worstSetName = set.getName();
+                }
+            }
+        }
+
         return new GeneralStatistics(sets.size(), totalQuestions, totalCorrect, totalWrong,
                 neverAnswered, dueCards, levelDistribution, averageLevel, correctPercentage,
-                mostFrequentQuestion, mostFrequentCount);
+                mostFrequentQuestion, mostFrequentCount,
+                bestSetName, bestSetPercentage, worstSetName, worstSetPercentage);
     }
 
     private static String findQuestionById(List<FlashcardSet> sets, String id) {
@@ -99,5 +126,21 @@ public class GeneralStatistics extends BaseStatistics {
 
     public int getMostFrequentCount() {
         return mostFrequentCount;
+    }
+
+    public String getBestSetName() {
+        return bestSetName;
+    }
+
+    public double getBestSetPercentage() {
+        return bestSetPercentage;
+    }
+
+    public String getWorstSetName() {
+        return worstSetName;
+    }
+
+    public double getWorstSetPercentage() {
+        return worstSetPercentage;
     }
 }

@@ -26,13 +26,24 @@ public class StatisticsMenuHelper {
         System.out.println("Gesamte Anzahl an Lernsets: " + stats.getTotalSets());
         printBaseStatistics(stats);
 
-        System.out.println("Noch nie beantwortete Karten: " + stats.getNeverAnswered());
-        System.out.printf("Durchschnittliches Level: %.2f\n", stats.getAverageLevel());
-
         printLevelDistribution(stats.getLevelDistribution());
 
         if (!"N/A".equals(stats.getMostFrequentQuestion())) {
             System.out.println("\nMeistgeübte Karte: \"" + stats.getMostFrequentQuestion() + "\" (" + stats.getMostFrequentCount() + " Versuche)");
+        }
+
+        System.out.println("\nSet-Highlights:");
+        if (!"N/A".equals(stats.getBestSetName())) {
+            System.out.printf("  Bestes Set: %s (%.2f%% richtig)\n", stats.getBestSetName(), stats.getBestSetPercentage());
+        }
+        if (!"N/A".equals(stats.getWorstSetName())) {
+            System.out.printf("  Schlechtestes Set: %s (%.2f%% richtig)\n", stats.getWorstSetName(), stats.getWorstSetPercentage());
+        }
+
+        List<SessionResult> sessionResults = storage.loadSessionResults();
+        if (!sessionResults.isEmpty()) {
+            SessionResult last = sessionResults.get(sessionResults.size() - 1);
+            System.out.println("\nLetzte Aktivität: " + last.getTimestamp().format(DATE_TIME_FORMATTER) + " (" + last.getSessionName() + ")");
         }
     }
 
@@ -61,6 +72,8 @@ public class StatisticsMenuHelper {
         System.out.println("Richtig beantwortet: " + stats.getTotalCorrect());
         System.out.println("Falsch beantwortet: " + stats.getTotalWrong());
         System.out.printf("Erfolgsquote: %.2f%%\n", stats.getCorrectPercentage());
+        System.out.println("Noch nie beantwortet: " + stats.getNeverAnswered());
+        System.out.printf("Durchschnittliches Level: %.2f\n", stats.getAverageLevel());
         printSeparator();
         System.out.println("Fällige Karten: " + stats.getDueCards());
     }
