@@ -2,14 +2,13 @@ package de.sagaweschaefer.flashcard.menu.flashcardsession;
 
 import de.sagaweschaefer.flashcard.menu.Menu;
 import de.sagaweschaefer.flashcard.menu.MenuItem;
-import de.sagaweschaefer.flashcard.util.JsonStorage;
 
 public class FlashcardSessionMenu {
     private final Menu menu;
     private final FlashcardSessionMenuHelper helper;
 
-    public FlashcardSessionMenu(JsonStorage storage) {
-        this.helper = new FlashcardSessionMenuHelper(storage);
+    public FlashcardSessionMenu(FlashcardSessionMenuHelper helper) {
+        this.helper = helper;
         this.menu = new Menu("Lernsession");
         setupMenu();
     }
