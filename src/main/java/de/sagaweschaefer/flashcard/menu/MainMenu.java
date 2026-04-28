@@ -1,20 +1,23 @@
 package de.sagaweschaefer.flashcard.menu;
 
+import de.sagaweschaefer.flashcard.configuration.ApplicationContext;
 import de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionMenu;
 import de.sagaweschaefer.flashcard.menu.flashcardsetmanager.FlashcardSetManagerMenu;
 import de.sagaweschaefer.flashcard.menu.statistics.StatisticsMenu;
 import de.sagaweschaefer.flashcard.util.AppScanner;
-import de.sagaweschaefer.flashcard.util.JsonStorage;
 
 public class MainMenu {
     private final Menu menu;
-    private final JsonStorage storage = new JsonStorage();
-    private final FlashcardSetManagerMenu flashcardSetManagerMenu = new FlashcardSetManagerMenu(storage);
-    private final FlashcardSessionMenu flashcardSessionMenu = new FlashcardSessionMenu(storage);
-    private final StatisticsMenu statisticsMenu = new StatisticsMenu(storage);
+    private final FlashcardSetManagerMenu flashcardSetManagerMenu;
+    private final FlashcardSessionMenu flashcardSessionMenu;
+    private final StatisticsMenu statisticsMenu;
 
     public MainMenu() {
+        ApplicationContext applicationContext = new ApplicationContext();
         this.menu = new Menu("Hauptmenü");
+        this.flashcardSetManagerMenu = applicationContext.createFlashcardSetManagerMenu();
+        this.flashcardSessionMenu = applicationContext.createFlashcardSessionMenu();
+        this.statisticsMenu = applicationContext.createStatisticsMenu();
         setupMenu();
     }
 
