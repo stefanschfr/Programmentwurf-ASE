@@ -2,6 +2,7 @@ package de.sagaweschaefer.flashcard.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,7 +13,8 @@ public class FlashcardStatistics implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private String flashcardId;
+    @JsonIgnore
+    private FlashcardId flashcardId;
     private LocalDateTime lastCorrectAt;
     private int correctCount;
     private int wrongCount;
@@ -22,18 +24,24 @@ public class FlashcardStatistics implements Serializable {
     }
 
     public FlashcardStatistics(String flashcardId) {
-        this.flashcardId = flashcardId;
+        this(FlashcardId.of(flashcardId));
+    }
+
+    public FlashcardStatistics(FlashcardId flashcardId) {
+        setFlashcardId(flashcardId.value());
         this.correctCount = 0;
         this.wrongCount = 0;
         this.level = 0;
     }
 
+    @JsonProperty("flashcardId")
     public String getFlashcardId() {
-        return flashcardId;
+        return flashcardId == null ? null : flashcardId.value();
     }
 
+    @JsonProperty("flashcardId")
     public void setFlashcardId(String flashcardId) {
-        this.flashcardId = flashcardId;
+        this.flashcardId = FlashcardId.of(flashcardId);
     }
 
     public LocalDateTime getLastCorrectAt() {

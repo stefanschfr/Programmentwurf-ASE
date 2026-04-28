@@ -61,7 +61,7 @@ public class GeneralStatistics extends BaseStatistics {
         String mostFrequentQuestion = "N/A";
         int mostFrequentCount = 0;
         if (mostFrequentStats != null && (mostFrequentStats.getCorrectCount() + mostFrequentStats.getWrongCount()) > 0) {
-            mostFrequentQuestion = findQuestionById(sets, mostFrequentStats.getFlashcardId());
+            mostFrequentQuestion = findQuestionById(sets, FlashcardId.of(mostFrequentStats.getFlashcardId()));
             mostFrequentCount = mostFrequentStats.getCorrectCount() + mostFrequentStats.getWrongCount();
         }
 
@@ -94,10 +94,13 @@ public class GeneralStatistics extends BaseStatistics {
                 bestSetName, bestSetPercentage, worstSetName, worstSetPercentage);
     }
 
-    private static String findQuestionById(List<FlashcardSet> sets, String id) {
+    private static String findQuestionById(List<FlashcardSet> sets, FlashcardId id) {
+        if (id == null) {
+            return "Unbekannte Frage";
+        }
         return sets.stream()
                 .flatMap(s -> s.getFlashcards().stream())
-                .filter(c -> c.getId().equals(id))
+                .filter(c -> id.equals(FlashcardId.of(c.getId())))
                 .map(Flashcard::getQuestion)
                 .findFirst()
                 .orElse("Unbekannte Frage");
@@ -112,13 +115,6 @@ public class GeneralStatistics extends BaseStatistics {
         return totalSets;
     }
 
-    public int getNeverAnswered() {
-        return neverAnswered;
-    }
-
-    public double getAverageLevel() {
-        return averageLevel;
-    }
 
     public String getMostFrequentQuestion() {
         return mostFrequentQuestion;

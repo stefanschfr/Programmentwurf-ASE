@@ -1,107 +1,90 @@
 package de.sagaweschaefer.flashcard.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 public class Flashcard implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private String id;
-    private String question;
-    private QuestionType questionType;
-    private String answerText;
-    private Double answerNum;
-    private List<String> options;
+    @JsonIgnore
+    private FlashcardId id;
+    private final String question;
+    private final QuestionType questionType;
+    @JsonProperty("answerText")
+    private final String answerText;
+    @JsonProperty("answerNum")
+    private final Double answerNum;
+    private final List<String> options;
 
     public Flashcard() {
-        this.id = UUID.randomUUID().toString();
+        this(FlashcardId.random().value(), null, null, null, null, null);
+    }
+
+    @JsonCreator
+    public Flashcard(@JsonProperty("id") String id,
+                     @JsonProperty("question") String question,
+                     @JsonProperty("questionType") QuestionType questionType,
+                     @JsonProperty("answerText") String answerText,
+                     @JsonProperty("answerNum") Double answerNum,
+                     @JsonProperty("options") List<String> options) {
+        setId(id == null ? FlashcardId.random().value() : id);
+        this.question = question;
+        this.questionType = questionType;
+        this.answerText = answerText;
+        this.answerNum = answerNum;
+        this.options = options;
     }
 
     // Konstruktor für Freitext
     public Flashcard(String question, String answerText) {
-        this();
-        this.question = question;
-        this.questionType = QuestionType.FREE_TEXT;
-        this.answerText = answerText;
+        this(FlashcardId.random().value(), question, QuestionType.FREE_TEXT, answerText, null, null);
     }
 
     // Konstruktor für Multiple Choice
     public Flashcard(String question, String answerText, List<String> options) {
-        this();
-        this.question = question;
-        this.questionType = QuestionType.MULTIPLE_CHOICE;
-        this.answerText = answerText;
-        this.options = options;
+        this(FlashcardId.random().value(), question, QuestionType.MULTIPLE_CHOICE, answerText, null, options);
     }
 
     // Konstruktor für True/False
     public Flashcard(String question, boolean trueFalse) {
-        this();
-        this.question = question;
-        this.questionType = QuestionType.TRUE_FALSE;
-        this.answerText = trueFalse ? "Wahr" : "Falsch";
+        this(FlashcardId.random().value(), question, QuestionType.TRUE_FALSE, trueFalse ? "Wahr" : "Falsch", null, null);
     }
 
     // Konstruktor für numerische Fragen
     public Flashcard(String question, double answerNum) {
-        this();
-        this.question = question;
-        this.questionType = QuestionType.NUMERIC;
-        this.answerNum = answerNum;
+        this(FlashcardId.random().value(), question, QuestionType.NUMERIC, null, answerNum, null);
     }
 
+    @JsonProperty("id")
     public String getId() {
-        return id;
+        return id == null ? null : id.value();
     }
 
+    @JsonProperty("id")
     public void setId(String id) {
-        this.id = id;
+        this.id = FlashcardId.of(id);
     }
 
     public String getQuestion() {
         return question;
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
     public QuestionType getQuestionType() {
         return questionType;
-    }
-
-    public void setQuestionType(QuestionType questionType) {
-        this.questionType = questionType;
-    }
-
-    public String getAnswerText() {
-        return answerText;
-    }
-
-    public void setAnswerText(String answerText) {
-        this.answerText = answerText;
-    }
-
-    public Double getAnswerNum() {
-        return answerNum;
-    }
-
-    public void setAnswerNum(Double answerNum) {
-        this.answerNum = answerNum;
     }
 
     public List<String> getOptions() {
         return options;
     }
 
-    public void setOptions(List<String> options) {
-        this.options = options;
-    }
 
     public boolean checkAnswer(String answer) {
         if (answer == null) return false;

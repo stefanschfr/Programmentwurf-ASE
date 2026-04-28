@@ -6,6 +6,7 @@ import de.sagaweschaefer.flashcard.application.port.SessionInteraction;
 import de.sagaweschaefer.flashcard.application.session.PreparedSession;
 import de.sagaweschaefer.flashcard.application.session.SessionSummary;
 import de.sagaweschaefer.flashcard.model.Flashcard;
+import de.sagaweschaefer.flashcard.model.FlashcardId;
 import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
 import de.sagaweschaefer.flashcard.model.SessionResult;
 
@@ -63,7 +64,7 @@ public class RunLearningSessionUseCase {
     }
 
     private boolean processCard(Flashcard card, Map<String, FlashcardStatistics> statisticsMap) {
-        FlashcardStatistics statistics = statisticsMap.computeIfAbsent(card.getId(), FlashcardStatistics::new);
+        FlashcardStatistics statistics = statisticsMap.computeIfAbsent(card.getId(), id -> new FlashcardStatistics(FlashcardId.of(id)));
         boolean wasDue = statistics.isDue();
 
         if (sessionInteraction.askQuestion(card)) {
