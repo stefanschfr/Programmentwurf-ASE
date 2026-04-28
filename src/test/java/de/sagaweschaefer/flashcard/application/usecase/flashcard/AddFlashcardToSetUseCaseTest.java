@@ -16,7 +16,7 @@ class AddFlashcardToSetUseCaseTest {
     void addsFlashcardToManagedSetAndSynchronizesSelectedSet() {
         Flashcard card = TestDataFactory.freeTextCard("Was ist Java?", "Eine Sprache");
         FlashcardSet managedSet = TestDataFactory.flashcardSet("Programmierung");
-        FlashcardSet selectedSet = TestDataFactory.flashcardSet("Programmierung");
+        FlashcardSet selectedSet = TestDataFactory.flashcardSet("  programmierung  ");
         InMemoryFlashcardSetRepository repository = new InMemoryFlashcardSetRepository(List.of(managedSet));
         AddFlashcardToSetUseCase useCase = new AddFlashcardToSetUseCase(repository);
 

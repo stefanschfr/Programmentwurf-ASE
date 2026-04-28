@@ -24,12 +24,13 @@ class PrepareSessionUseCaseTest {
         Flashcard dueCard = TestDataFactory.freeTextCard("Frage 1", "A1");
         Flashcard learnedCard = TestDataFactory.freeTextCard("Frage 2", "A2");
         FlashcardSet set = TestDataFactory.flashcardSet("Set", dueCard, learnedCard);
+        FlashcardSet selectedSet = TestDataFactory.flashcardSet("  set  ");
         FlashcardStatistics learnedStatistics = TestDataFactory.statistics(learnedCard.getId(), 6, 5, 0, LocalDateTime.now().minusDays(2));
         InMemoryFlashcardSetRepository setRepository = new InMemoryFlashcardSetRepository(List.of(set));
         InMemoryFlashcardStatisticsRepository statisticsRepository = new InMemoryFlashcardStatisticsRepository(Map.of(learnedCard.getId(), learnedStatistics));
         PrepareSessionUseCase useCase = new PrepareSessionUseCase(setRepository, statisticsRepository);
 
-        PreparedSession result = useCase.prepareSetLearningSession(set);
+        PreparedSession result = useCase.prepareSetLearningSession(selectedSet);
 
         assertEquals(SessionMode.SET_LEARNING, result.getMode());
         assertEquals(1, result.getFlashcards().size());

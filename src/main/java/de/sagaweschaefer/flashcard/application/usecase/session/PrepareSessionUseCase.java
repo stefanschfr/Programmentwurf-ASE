@@ -120,16 +120,11 @@ public class PrepareSessionUseCase {
     }
 
     private boolean isSameSet(FlashcardSet first, FlashcardSet second) {
-        if (first == second) {
-            return true;
-        }
-        if (first == null || second == null) {
-            return false;
-        }
-        if (first.getName() == null || second.getName() == null) {
-            return false;
-        }
-        return first.getName().equalsIgnoreCase(second.getName());
+        return first == second
+                || (first != null
+                && second != null
+                && first.getSetName() != null
+                && first.getSetName().equals(second.getSetName()));
     }
 }
 

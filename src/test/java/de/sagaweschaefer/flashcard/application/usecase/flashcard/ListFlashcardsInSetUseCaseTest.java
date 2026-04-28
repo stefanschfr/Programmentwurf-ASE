@@ -16,7 +16,7 @@ class ListFlashcardsInSetUseCaseTest {
         Flashcard first = TestDataFactory.freeTextCard("Frage 1", "A1");
         Flashcard second = TestDataFactory.freeTextCard("Frage 2", "A2");
         FlashcardSet managedSet = TestDataFactory.flashcardSet("Set", first, second);
-        FlashcardSet selectedSet = TestDataFactory.flashcardSet("Set");
+        FlashcardSet selectedSet = TestDataFactory.flashcardSet("  set  ");
         InMemoryFlashcardSetRepository repository = new InMemoryFlashcardSetRepository(List.of(managedSet));
         ListFlashcardsInSetUseCase useCase = new ListFlashcardsInSetUseCase(repository);
 
