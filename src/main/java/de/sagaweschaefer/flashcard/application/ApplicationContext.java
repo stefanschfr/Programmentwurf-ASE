@@ -4,7 +4,10 @@ import de.sagaweschaefer.flashcard.adapter.persistence.JsonDailyGoalRepository;
 import de.sagaweschaefer.flashcard.adapter.persistence.JsonFlashcardSetRepository;
 import de.sagaweschaefer.flashcard.adapter.persistence.JsonSessionResultRepository;
 import de.sagaweschaefer.flashcard.adapter.persistence.JsonStatisticsRepository;
+import de.sagaweschaefer.flashcard.application.usecase.DeleteFlashcardSetUseCase;
 import de.sagaweschaefer.flashcard.application.usecase.GetDailyProgressUseCase;
+import de.sagaweschaefer.flashcard.application.usecase.GetSessionResultsUseCase;
+import de.sagaweschaefer.flashcard.application.usecase.GetStatisticsUseCase;
 import de.sagaweschaefer.flashcard.application.usecase.RecommendDailyCardsUseCase;
 import de.sagaweschaefer.flashcard.application.usecase.SetDailyGoalUseCase;
 import de.sagaweschaefer.flashcard.domain.repository.DailyGoalRepository;
@@ -29,6 +32,10 @@ public class ApplicationContext {
     private final SetDailyGoalUseCase setDailyGoalUseCase;
     private final GetDailyProgressUseCase getDailyProgressUseCase;
     private final RecommendDailyCardsUseCase recommendDailyCardsUseCase;
+    private final DeleteFlashcardSetUseCase deleteFlashcardSetUseCase;
+    private final GetStatisticsUseCase getStatisticsUseCase;
+    private final GetSessionResultsUseCase getSessionResultsUseCase;
+    private final GetSessionResultsUseCase getExamResultsUseCase;
 
     public ApplicationContext() {
         this.flashcardSetRepository = new JsonFlashcardSetRepository(FLASHCARD_SETS_PATH);
@@ -42,6 +49,10 @@ public class ApplicationContext {
         this.getDailyProgressUseCase = new GetDailyProgressUseCase(dailyLearningPlanService);
         this.recommendDailyCardsUseCase = new RecommendDailyCardsUseCase(
                 flashcardSetRepository, statisticsRepository, dailyLearningPlanService);
+        this.deleteFlashcardSetUseCase = new DeleteFlashcardSetUseCase(flashcardSetRepository);
+        this.getStatisticsUseCase = new GetStatisticsUseCase(flashcardSetRepository, statisticsRepository);
+        this.getSessionResultsUseCase = new GetSessionResultsUseCase(sessionResultRepository);
+        this.getExamResultsUseCase = new GetSessionResultsUseCase(examResultRepository);
     }
 
     public FlashcardSetRepository getFlashcardSetRepository() {
@@ -60,7 +71,6 @@ public class ApplicationContext {
         return examResultRepository;
     }
 
-
     public DailyLearningPlanService getDailyLearningPlanService() {
         return dailyLearningPlanService;
     }
@@ -76,5 +86,24 @@ public class ApplicationContext {
     public RecommendDailyCardsUseCase getRecommendDailyCardsUseCase() {
         return recommendDailyCardsUseCase;
     }
-}
 
+    @SuppressWarnings("unused") // Wird für schrittweise Menü-Migration über den ApplicationContext bereitgehalten
+    public DeleteFlashcardSetUseCase getDeleteFlashcardSetUseCase() {
+        return deleteFlashcardSetUseCase;
+    }
+
+    @SuppressWarnings("unused") // Wird für schrittweise Menü-Migration über den ApplicationContext bereitgehalten
+    public GetStatisticsUseCase getGetStatisticsUseCase() {
+        return getStatisticsUseCase;
+    }
+
+    @SuppressWarnings("unused") // Wird für schrittweise Menü-Migration über den ApplicationContext bereitgehalten
+    public GetSessionResultsUseCase getGetSessionResultsUseCase() {
+        return getSessionResultsUseCase;
+    }
+
+    @SuppressWarnings("unused") // Wird für schrittweise Menü-Migration über den ApplicationContext bereitgehalten
+    public GetSessionResultsUseCase getGetExamResultsUseCase() {
+        return getExamResultsUseCase;
+    }
+}

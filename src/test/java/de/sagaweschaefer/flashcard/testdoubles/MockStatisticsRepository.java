@@ -46,5 +46,9 @@ public class MockStatisticsRepository implements StatisticsRepository {
     public Map<String, FlashcardStatistics> getData() {
         return data;
     }
+
+    public void seedStatistic(String flashcardId, FlashcardStatistics stats) {
+        data.put(flashcardId, stats);
+    }
 }
 
