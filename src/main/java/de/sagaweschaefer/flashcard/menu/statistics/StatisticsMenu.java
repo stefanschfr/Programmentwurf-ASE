@@ -22,6 +22,8 @@ public class StatisticsMenu {
         menu.addItem(5, new MenuItem("Ergebnisse der letzten Prüfungen anzeigen", statisticsMenuHelper::showLastExamResults));
         menu.addItem(6, new MenuItem("Fällige Karten nach Set anzeigen", statisticsMenuHelper::showDueCardsBySet));
         menu.addItem(7, new MenuItem("Schwierigste Karten anzeigen", statisticsMenuHelper::showHardestCards));
+        menu.addItem(8, new MenuItem("Wochenbericht (letzte 7 Tage)", statisticsMenuHelper::showWeeklyLearningReport));
+        menu.addItem(9, new MenuItem("Trendanalyse der letzten Sessions", statisticsMenuHelper::showSessionTrendAnalysis));
         menu.addItem(0, new MenuItem("Zurück zum Hauptmenü", () -> {
         }, true));
     }
