@@ -2,15 +2,20 @@ package de.sagaweschaefer.flashcard.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import de.sagaweschaefer.flashcard.domain.service.SpacedRepetitionService;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@SuppressWarnings("unused") // Setter werden via Reflection durch Jackson aufgerufen
 public class FlashcardStatistics implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    private static final SpacedRepetitionService SPACED_REPETITION = new SpacedRepetitionService();
 
     private String flashcardId;
     private LocalDateTime lastCorrectAt;
@@ -74,38 +79,16 @@ public class FlashcardStatistics implements Serializable {
     }
 
     public void applyRating(int rating, boolean wasDue) {
-        if (rating == 1) {
-            if (this.level > 0) {
-                this.level--;
-            }
-        } else if (rating == 3) {
-            if (wasDue && this.level < 6) {
-                this.level++;
-            }
-        }
-        // rating == 2: Level bleibt gleich, keine Aktion erforderlich
+        this.level = SPACED_REPETITION.applyRating(this.level, rating, wasDue);
     }
 
     public void incrementWrong() {
         this.wrongCount++;
-        this.level = 0;
+        this.level = SPACED_REPETITION.levelAfterWrongAnswer();
     }
 
     @JsonIgnore
     public boolean isDue() {
-        if (level == 0 || lastCorrectAt == null) {
-            return true;
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-        return switch (level) {
-            case 1 -> lastCorrectAt.plusMinutes(1).isBefore(now);
-            case 2 -> lastCorrectAt.plusMinutes(10).isBefore(now);
-            case 3 -> lastCorrectAt.plusHours(5).isBefore(now);
-            case 4 -> lastCorrectAt.plusDays(1).isBefore(now);
-            case 5 -> lastCorrectAt.plusDays(14).isBefore(now);
-            case 6 -> lastCorrectAt.plusMonths(1).isBefore(now);
-            default -> true;
-        };
+        return SPACED_REPETITION.isDue(this.level, this.lastCorrectAt);
     }
 }
