@@ -6,6 +6,8 @@ import de.sagaweschaefer.flashcard.util.JsonStorage;
 import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +44,7 @@ public class StatisticsMenuHelper {
 
         List<SessionResult> sessionResults = storage.loadSessionResults();
         if (!sessionResults.isEmpty()) {
-            SessionResult last = sessionResults.get(sessionResults.size() - 1);
+            SessionResult last = sessionResults.getLast();
             System.out.println("\nLetzte Aktivität: " + last.getTimestamp().format(DATE_TIME_FORMATTER) + " (" + last.getSessionName() + ")");
         }
     }
@@ -138,6 +140,89 @@ public class StatisticsMenuHelper {
         displayResults(storage.loadExamResults(), "Prüfungen");
     }
 
+    public void showDueCardsBySet() {
+        List<FlashcardSet> sets = storage.loadFlashcardSets();
+        Map<String, FlashcardStatistics> statsMap = storage.loadStatistics();
+
+        if (sets.isEmpty()) {
+            System.out.println("Keine Lernsets vorhanden.");
+            return;
+        }
+
+        printHeader("Fällige Karten je Set");
+        int totalDue = 0;
+
+        for (FlashcardSet set : sets) {
+            int dueInSet = 0;
+            for (Flashcard card : set.getFlashcards()) {
+                FlashcardStatistics stats = statsMap.get(card.getId());
+                boolean due = (stats == null) || stats.isDue();
+                if (due) {
+                    dueInSet++;
+                }
+            }
+            totalDue += dueInSet;
+            int totalInSet = set.getFlashcards().size();
+            double ratio = totalInSet == 0 ? 0.0 : (double) dueInSet / totalInSet;
+            System.out.printf("- %-25s %3d/%-3d fällig  %s%n",
+                    truncate(set.getName(), 25),
+                    dueInSet,
+                    totalInSet,
+                    renderProgressBar(1.0 - ratio, 20));
+        }
+
+        printSeparator();
+        System.out.println("Gesamt fällige Karten: " + totalDue);
+    }
+
+    public void showHardestCards() {
+        List<FlashcardSet> sets = storage.loadFlashcardSets();
+        Map<String, FlashcardStatistics> statsMap = storage.loadStatistics();
+
+        if (sets.isEmpty()) {
+            System.out.println("Keine Lernsets vorhanden.");
+            return;
+        }
+
+        List<CardDifficultyEntry> entries = new ArrayList<>();
+        for (FlashcardSet set : sets) {
+            for (Flashcard card : set.getFlashcards()) {
+                FlashcardStatistics stats = statsMap.get(card.getId());
+                if (stats == null) {
+                    continue;
+                }
+                int attempts = stats.getCorrectCount() + stats.getWrongCount();
+                if (attempts < 2) {
+                    continue;
+                }
+                double wrongRate = (double) stats.getWrongCount() / attempts;
+                entries.add(new CardDifficultyEntry(set.getName(), card.getQuestion(), attempts, wrongRate, stats.getLevel()));
+            }
+        }
+
+        if (entries.isEmpty()) {
+            System.out.println("Noch nicht genug Lernhistorie für eine Auswertung (mind. 2 Versuche pro Karte).");
+            return;
+        }
+
+        entries.sort(Comparator
+                .comparingDouble(CardDifficultyEntry::wrongRate).reversed()
+                .thenComparingInt(CardDifficultyEntry::attempts).reversed());
+
+        printHeader("Schwierigste Karten (Top 5)");
+        int limit = Math.min(5, entries.size());
+        for (int i = 0; i < limit; i++) {
+            CardDifficultyEntry e = entries.get(i);
+            System.out.printf("%d. %-20s | %-40s | Fehlerquote: %5.1f%% | Versuche: %2d | Level: %d%n",
+                    (i + 1),
+                    truncate(e.setName(), 20),
+                    truncate(e.question(), 40),
+                    e.wrongRate() * 100,
+                    e.attempts(),
+                    e.level());
+        }
+    }
+
     private void displayResults(List<SessionResult> results, String type) {
         if (results.isEmpty()) {
             System.out.println("Noch keine " + type + " gespeichert.");
@@ -182,7 +267,41 @@ public class StatisticsMenuHelper {
     private void printLevelDistribution(int[] levelDistribution) {
         System.out.println("\nLevel-Verteilung:");
         for (int i = 0; i <= 6; i++) {
-            System.out.printf("  Level %d: %d Karten\n", i, levelDistribution[i]);
+            int count = levelDistribution[i];
+            System.out.printf("  Level %d: %3d Karten  %s%n", i, count, renderProgressBar(normalizeLevelCount(levelDistribution, count), 15));
         }
+    }
+
+    private double normalizeLevelCount(int[] levelDistribution, int count) {
+        int max = 0;
+        for (int value : levelDistribution) {
+            if (value > max) {
+                max = value;
+            }
+        }
+        if (max == 0) {
+            return 0.0;
+        }
+        return (double) count / max;
+    }
+
+    private String renderProgressBar(double ratio, int width) {
+        double clamped = Math.max(0.0, Math.min(1.0, ratio));
+        int filled = (int) Math.round(clamped * width);
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < width; i++) {
+            sb.append(i < filled ? '#' : '-');
+        }
+        sb.append(']');
+        return sb.toString();
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text == null) return "";
+        if (text.length() <= maxLength) return text;
+        return text.substring(0, maxLength - 3) + "...";
+    }
+
+    private record CardDifficultyEntry(String setName, String question, int attempts, double wrongRate, int level) {
     }
 }

@@ -5,10 +5,19 @@ import de.sagaweschaefer.flashcard.menu.dailyplan.DailyPlanMenu;
 import de.sagaweschaefer.flashcard.menu.flashcardsession.FlashcardSessionMenu;
 import de.sagaweschaefer.flashcard.menu.flashcardsetmanager.FlashcardSetManagerMenu;
 import de.sagaweschaefer.flashcard.menu.statistics.StatisticsMenu;
+import de.sagaweschaefer.flashcard.model.FlashcardSet;
+import de.sagaweschaefer.flashcard.model.FlashcardStatistics;
+import de.sagaweschaefer.flashcard.model.SessionResult;
 import de.sagaweschaefer.flashcard.util.AppScanner;
 import de.sagaweschaefer.flashcard.util.JsonStorage;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+
 public class MainMenu {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
     private final Menu menu;
     private final JsonStorage storage = new JsonStorage();
     private final ApplicationContext applicationContext = new ApplicationContext();
@@ -23,6 +32,7 @@ public class MainMenu {
 
     public MainMenu() {
         this.menu = new Menu("Hauptmenü");
+        this.menu.setBeforeDisplayHook(this::showDashboard);
         setupMenu();
     }
 
@@ -41,5 +51,27 @@ public class MainMenu {
 
     public void start() {
         menu.start();
+    }
+
+    private void showDashboard() {
+        List<FlashcardSet> sets = storage.loadFlashcardSets();
+        Map<String, FlashcardStatistics> stats = storage.loadStatistics();
+        List<SessionResult> sessions = storage.loadSessionResults();
+        List<SessionResult> exams = storage.loadExamResults();
+
+        int totalCards = sets.stream().mapToInt(s -> s.getFlashcards().size()).sum();
+        int dueCards = (int) stats.values().stream().filter(FlashcardStatistics::isDue).count();
+
+        System.out.println("\n----------------------------------------");
+        System.out.println("Flashcard-App Dashboard");
+        System.out.println("Sets: " + sets.size() + " | Karten: " + totalCards + " | Fällig: " + dueCards);
+        System.out.println("Sessions: " + sessions.size() + " | Prüfungen: " + exams.size());
+
+        if (!sessions.isEmpty()) {
+            SessionResult last = sessions.getLast();
+            System.out.println("Letzte Session: " + last.getSessionName() + " am "
+                    + last.getTimestamp().format(DATE_TIME_FORMATTER));
+        }
+        System.out.println("----------------------------------------");
     }
 }

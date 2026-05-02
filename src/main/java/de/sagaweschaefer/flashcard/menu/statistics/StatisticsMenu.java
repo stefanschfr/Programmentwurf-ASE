@@ -20,6 +20,8 @@ public class StatisticsMenu {
         menu.addItem(3, new MenuItem("Statistik für einzelne Frage anzeigen", statisticsMenuHelper::showCardStatistics));
         menu.addItem(4, new MenuItem("Ergebnisse der letzten Lernsessions anzeigen", statisticsMenuHelper::showLastSessionResults));
         menu.addItem(5, new MenuItem("Ergebnisse der letzten Prüfungen anzeigen", statisticsMenuHelper::showLastExamResults));
+        menu.addItem(6, new MenuItem("Fällige Karten nach Set anzeigen", statisticsMenuHelper::showDueCardsBySet));
+        menu.addItem(7, new MenuItem("Schwierigste Karten anzeigen", statisticsMenuHelper::showHardestCards));
         menu.addItem(0, new MenuItem("Zurück zum Hauptmenü", () -> {
         }, true));
     }
