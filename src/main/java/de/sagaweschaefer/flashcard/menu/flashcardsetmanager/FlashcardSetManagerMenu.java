@@ -20,6 +20,8 @@ public class FlashcardSetManagerMenu {
         menu.addItem(2, new MenuItem("Alle Lernkarten-Sets anzeigen", flashcardSetManagerMenuHelper::listFlashcardSets));
         menu.addItem(3, new MenuItem("Lernkartenset bearbeiten", flashcardSetManagerMenuHelper::editFlashcardSet));
         menu.addItem(4, new MenuItem("Lernkartenset löschen", flashcardSetManagerMenuHelper::deleteFlashcardSet));
+        menu.addItem(5, new MenuItem("Lernkartensets exportieren (JSON)", flashcardSetManagerMenuHelper::exportFlashcardSets));
+        menu.addItem(6, new MenuItem("Lernkartensets importieren (JSON)", flashcardSetManagerMenuHelper::importFlashcardSets));
         menu.addItem(0, new MenuItem("Zurück zum Hauptmenü", () -> {
         }, true));
     }

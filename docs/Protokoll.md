@@ -63,32 +63,19 @@
   [kurze Erläuterung in eigenen Worten, was Domain Code ist - 1 Beispiel im Code zeigen, das bisher noch nicht gezeigt wurde]
 * **Analyse der Dependency Rule (3P)**
   [In der Vorlesung wurde im Rahmen der 'Clean Architecture' die s.g. Dependency Rule vorgestellt. Je 1 Klasse zeigen, die die Dependency Rule einhält und 1 Klasse, die die Dependency Rule verletzt; jeweils UML (mind. die betreffende Klasse inkl. der Klassen, die von ihr abhängen bzw. von der sie abhängt) und Analyse der Abhängigkeiten in beide Richtungen (d.h., von wem hängt die Klasse ab und wer hängt von der Klasse ab) in Bezug auf die Dependency Rule]
-    * Positiv-Beispiel: Dependency Rule
-    * **Flashcard**
-    * Negativ-Beispiel: Dependency Rule
-    * **MenuHelper**
 
 ---
 
 ## Kapitel 3: SOLID (8P)
 * **Analyse SRP (3P)**
   [jeweils eine Klasse als positives und negatives Beispiel für SRP; jeweils UML und Beschreibung der Aufgabe bzw. der Aufgaben und möglicher Lösungsweg des Negativ-Beispiels (inkl. UML)]
-    * Positiv-Beispiel
-    * **JsonStorage**
-    * Negativ-Beispiel
-    * **FlashcardSessionStatistics**
+
 * **Analyse OCP (3P)**
   [jeweils eine Klasse als positives und negatives Beispiel für OCP; jeweils UML und Analyse mit Begründung, warum das OCP erfüllt/nicht erfüllt wurde - falls erfüllt: warum hier sinnvoll/welches Problem gab es? Falls nicht erfüllt: wie könnte man es lösen (inkl. UML)?]
-    * Positiv-Beispiel
-    * **Menu**
-    * Negativ-Beispiel
-    * **FlashcardQuestionHelper**
+
 * **Analyse [LSP/ISP/DIP] (2P)**
   [jeweils eine Klasse als positives und negatives Beispiel für entweder LSP oder ISP oder DIP; jeweils UML und Begründung, warum hier das Prinzip erfüllt/nicht erfüllt wird; beim Negativ-Beispiel UML einer möglichen Lösung hinzufügen] [Anm.: es darf nur ein Prinzip ausgewählt werden; es darf NICHT z.B. ein positives Beispiel für LSP und ein negatives Beispiel für ISP genommen werden]
-    * Positiv-Beispiel
-    * **DIP: MenuItem**
-    * Negativ-Beispiel
-    * **DIP: FlashcardSessionMenuHelper**
+
 
 ---
 
