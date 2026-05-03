@@ -6,15 +6,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-/**
- * Entity: Lernfortschritt für einen einzelnen Tag.
- *
- * <p>Trackt, wie viele Karten an einem konkreten Datum bereits gelernt
- * wurden, sowie wie viele davon korrekt beantwortet waren. Wird vom
- * Daily-Goal-Repository pro Tag persistiert.</p>
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@SuppressWarnings("unused") // Setter werden via Reflection durch Jackson aufgerufen
+@SuppressWarnings("unused")
 public class DailyProgress implements Serializable {
 
     @Serial
@@ -67,7 +60,6 @@ public class DailyProgress implements Serializable {
         this.correctCards = correctCards;
     }
 
-    /** Erhöht den Zähler der gelernten Karten und ggf. der korrekten. */
     public void recordCard(boolean correct) {
         this.learnedCards++;
         if (correct) {
@@ -75,15 +67,10 @@ public class DailyProgress implements Serializable {
         }
     }
 
-    /** Liefert {@code true} wenn das Ziel für den Tag erreicht oder übertroffen ist. */
     public boolean isGoalReached() {
         return goalCards > 0 && learnedCards >= goalCards;
     }
 
-    /**
-     * Liefert den Fortschritt als Wert zwischen 0.0 und 1.0 (1.0 = Ziel erreicht).
-     * Werte über 100 % werden auf 1.0 begrenzt.
-     */
     public double getProgressRatio() {
         if (goalCards <= 0) {
             return 0.0;

@@ -2,22 +2,13 @@ package de.sagaweschaefer.flashcard.domain.valueobject;
 
 import java.util.Objects;
 
-/**
- * Value Object: Tägliches Lernziel (Anzahl Karten pro Tag).
- *
- * <p>Immutabel und durch Wert-Gleichheit definiert. Validiert beim Anlegen,
- * dass der Wert positiv und nicht unsinnig groß ist.</p>
- */
-@SuppressWarnings("unused") // Public Domain-API: wird via UseCases/Menu verwendet
+@SuppressWarnings("unused")
 public final class DailyGoal {
 
-    /** Minimal erlaubtes Tagesziel. */
     public static final int MIN_CARDS = 1;
 
-    /** Maximal sinnvolles Tagesziel (Hartgrenze gegen Tippfehler). */
     public static final int MAX_CARDS = 1000;
 
-    /** Standard-Tagesziel, falls kein Ziel gesetzt wurde. */
     public static final int DEFAULT_CARDS = 20;
 
     private final int cardsPerDay;

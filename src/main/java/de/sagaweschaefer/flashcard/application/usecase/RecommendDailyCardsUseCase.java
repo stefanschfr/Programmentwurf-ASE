@@ -7,14 +7,7 @@ import de.sagaweschaefer.flashcard.model.Flashcard;
 
 import java.util.List;
 
-/**
- * UseCase: Karten für die heutige Lerneinheit empfehlen.
- *
- * <p>Lädt Sets und Statistiken über die Repositories und delegiert die
- * Auswahl-Logik an den Domain-Service. Vermeidet Doppelarbeit (DRY) für
- * Aufrufer im Adapter-Layer.</p>
- */
-@SuppressWarnings("unused") // Wird via ApplicationContext im DailyPlanMenu verwendet
+@SuppressWarnings("unused")
 public class RecommendDailyCardsUseCase {
 
     private final FlashcardSetRepository setRepository;

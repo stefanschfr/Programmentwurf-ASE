@@ -18,7 +18,6 @@ public class Menu {
         items.put(key, item);
     }
 
-    /** Optionaler Hook, der vor jeder Menüanzeige ausgeführt wird. */
     public void setBeforeDisplayHook(Runnable beforeDisplayHook) {
         this.beforeDisplayHook = (beforeDisplayHook != null) ? beforeDisplayHook : () -> { };
     }

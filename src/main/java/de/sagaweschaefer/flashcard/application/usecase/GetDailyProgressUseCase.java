@@ -4,10 +4,7 @@ import de.sagaweschaefer.flashcard.domain.service.DailyLearningPlanService;
 import de.sagaweschaefer.flashcard.domain.valueobject.DailyGoal;
 import de.sagaweschaefer.flashcard.model.DailyProgress;
 
-/**
- * UseCase: Aktuellen Tagesfortschritt abrufen.
- */
-@SuppressWarnings("unused") // Wird via ApplicationContext im DailyPlanMenu verwendet
+@SuppressWarnings("unused")
 public class GetDailyProgressUseCase {
 
     private final DailyLearningPlanService service;
@@ -22,7 +19,6 @@ public class GetDailyProgressUseCase {
         return new Result(goal, progress);
     }
 
-    /** Aggregiertes Result-Objekt für die Anzeige. */
     public static final class Result {
         private final DailyGoal goal;
         private final DailyProgress progress;

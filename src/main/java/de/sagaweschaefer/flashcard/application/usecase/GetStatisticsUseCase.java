@@ -10,13 +10,6 @@ import de.sagaweschaefer.flashcard.model.GeneralStatistics;
 import java.util.List;
 import java.util.Map;
 
-/**
- * UseCase: Statistiken abrufen.
- *
- * <p>Liefert entweder die Gesamtstatistik oder die Statistik für ein einzelnes Set.
- * Hängt nur von Domain-Interfaces ab (DIP, Dependency Rule). Berechnung wird an
- * die bestehenden Statistik-Models delegiert.</p>
- */
 public class GetStatisticsUseCase {
 
     private final FlashcardSetRepository setRepository;
@@ -28,22 +21,12 @@ public class GetStatisticsUseCase {
         this.statisticsRepository = statisticsRepository;
     }
 
-    /**
-     * Berechnet die Gesamtstatistik über alle Sets.
-     */
     public GeneralStatistics getGeneralStatistics() {
         List<FlashcardSet> sets = setRepository.findAll();
         Map<String, FlashcardStatistics> stats = statisticsRepository.findAll();
         return GeneralStatistics.calculate(sets, stats);
     }
 
-    /**
-     * Berechnet die Statistik für ein einzelnes Set.
-     *
-     * @param setIndex 0-basierter Index
-     * @return Set-Statistik
-     * @throws IndexOutOfBoundsException bei ungültigem Index
-     */
     public FlashcardSetStatistics getSetStatistics(int setIndex) {
         List<FlashcardSet> sets = setRepository.findAll();
         if (setIndex < 0 || setIndex >= sets.size()) {

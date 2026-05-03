@@ -5,12 +5,6 @@ import de.sagaweschaefer.flashcard.model.FlashcardSet;
 
 import java.util.List;
 
-/**
- * UseCase: Ein FlashcardSet löschen.
- *
- * <p>Sucht das Set per Index und entfernt es aus der Persistenz.
- * Hängt nur vom Domain-Interface ab (Dependency Rule, DIP).</p>
- */
 public class DeleteFlashcardSetUseCase {
 
     private final FlashcardSetRepository repository;
@@ -19,13 +13,6 @@ public class DeleteFlashcardSetUseCase {
         this.repository = repository;
     }
 
-    /**
-     * Löscht das Set am gegebenen Index.
-     *
-     * @param index 0-basierter Index
-     * @return Name des gelöschten Sets
-     * @throws IndexOutOfBoundsException bei ungültigem Index
-     */
     public String execute(int index) {
         List<FlashcardSet> sets = repository.findAll();
         if (index < 0 || index >= sets.size()) {

@@ -87,22 +87,22 @@ public class ApplicationContext {
         return recommendDailyCardsUseCase;
     }
 
-    @SuppressWarnings("unused") // Wird für schrittweise Menü-Migration über den ApplicationContext bereitgehalten
+    @SuppressWarnings("unused")
     public DeleteFlashcardSetUseCase getDeleteFlashcardSetUseCase() {
         return deleteFlashcardSetUseCase;
     }
 
-    @SuppressWarnings("unused") // Wird für schrittweise Menü-Migration über den ApplicationContext bereitgehalten
+    @SuppressWarnings("unused")
     public GetStatisticsUseCase getGetStatisticsUseCase() {
         return getStatisticsUseCase;
     }
 
-    @SuppressWarnings("unused") // Wird für schrittweise Menü-Migration über den ApplicationContext bereitgehalten
+    @SuppressWarnings("unused")
     public GetSessionResultsUseCase getGetSessionResultsUseCase() {
         return getSessionResultsUseCase;
     }
 
-    @SuppressWarnings("unused") // Wird für schrittweise Menü-Migration über den ApplicationContext bereitgehalten
+    @SuppressWarnings("unused")
     public GetSessionResultsUseCase getGetExamResultsUseCase() {
         return getExamResultsUseCase;
     }

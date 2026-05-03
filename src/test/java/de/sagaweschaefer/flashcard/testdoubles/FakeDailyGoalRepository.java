@@ -9,11 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Fake-Implementierung des {@link DailyGoalRepository} für Tests.
- *
- * <p>Hält Goal und Fortschritte im Speicher, ohne Persistenz oder Framework.</p>
- */
 public class FakeDailyGoalRepository implements DailyGoalRepository {
 
     private DailyGoal goal;

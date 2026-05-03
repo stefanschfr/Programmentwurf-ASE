@@ -17,22 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Domain-Service für den täglichen Lernplan.
- *
- * <p>Aufgaben:
- * <ul>
- *     <li>Verwaltung des Tagesziels (Anzahl Karten/Tag)</li>
- *     <li>Berechnung und Persistenz des Tagesfortschritts</li>
- *     <li>Vorschlag von Karten für eine Lerneinheit (zuerst fällige, dann neue)</li>
- * </ul>
- * </p>
- *
- * <p>Reine Domänenlogik. Persistenz erfolgt ausschließlich über das injizierte
- * {@link DailyGoalRepository}; das aktuelle Datum kommt aus einer {@link Clock},
- * sodass der Service deterministisch testbar ist.</p>
- */
-@SuppressWarnings("unused") // Public Domain-API: wird aus UseCases, Menus und Tests genutzt
+@SuppressWarnings("unused")
 public class DailyLearningPlanService {
 
     private final DailyGoalRepository repository;
@@ -54,18 +39,15 @@ public class DailyLearningPlanService {
         this.clock = clock;
     }
 
-    /** Setzt das Tagesziel. */
     public void setGoal(DailyGoal goal) {
         if (goal == null) throw new IllegalArgumentException("goal darf nicht null sein");
         repository.saveGoal(goal);
     }
 
-    /** Liefert das aktuelle Tagesziel oder den Default ({@link DailyGoal#defaultGoal()}). */
     public DailyGoal getGoalOrDefault() {
         return repository.findGoal().orElseGet(DailyGoal::defaultGoal);
     }
 
-    /** Liefert den Fortschritt für heute (legt einen leeren Eintrag an, falls noch keiner existiert). */
     public DailyProgress getOrCreateTodayProgress() {
         LocalDate today = LocalDate.now(clock);
         Optional<DailyProgress> existing = repository.findProgress(today);
@@ -77,12 +59,6 @@ public class DailyLearningPlanService {
         return fresh;
     }
 
-    /**
-     * Verbucht eine gelernte Karte im Tagesfortschritt.
-     *
-     * @param correct {@code true} wenn die Antwort korrekt war
-     * @return aktualisierter Fortschritt
-     */
     public DailyProgress recordCardLearned(boolean correct) {
         DailyProgress progress = getOrCreateTodayProgress();
         progress.recordCard(correct);
@@ -90,21 +66,6 @@ public class DailyLearningPlanService {
         return progress;
     }
 
-    /**
-     * Wählt Karten für die heutige Lerneinheit aus.
-     *
-     * <p>Strategie:
-     * <ol>
-     *     <li>Zuerst alle fälligen Karten (über {@link SpacedRepetitionService})</li>
-     *     <li>Dann neue Karten (ohne Statistik) auffüllen</li>
-     *     <li>Begrenzung auf das verbleibende Tagesziel</li>
-     * </ol>
-     * </p>
-     *
-     * @param sets       alle vorhandenen FlashcardSets
-     * @param statistics Statistiken pro Karte (kann leer sein)
-     * @return Liste empfohlener Karten (kann leer sein)
-     */
     public List<Flashcard> recommendCardsForToday(List<FlashcardSet> sets,
                                                   Map<String, FlashcardStatistics> statistics) {
         if (sets == null || sets.isEmpty()) {

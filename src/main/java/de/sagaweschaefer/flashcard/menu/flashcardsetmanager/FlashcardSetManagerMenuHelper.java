@@ -101,7 +101,6 @@ public class FlashcardSetManagerMenuHelper {
         ImportFlashcardsUseCase importUseCase = new ImportFlashcardsUseCase(context.getFlashcardSetRepository());
         try {
             int count = importUseCase.execute(path);
-            // Refresh local list
             flashcardSets.clear();
             flashcardSets.addAll(storage.loadFlashcardSets());
             System.out.println(count + " Set(s) erfolgreich importiert.");

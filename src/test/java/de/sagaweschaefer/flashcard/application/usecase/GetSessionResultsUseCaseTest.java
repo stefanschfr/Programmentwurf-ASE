@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GetSessionResultsUseCaseTest {
 
-    /** Einfaches Inline-Fake für SessionResultRepository. */
     private static class FakeSessionResultRepository implements SessionResultRepository {
         private List<SessionResult> data;
 

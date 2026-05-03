@@ -13,13 +13,7 @@ import de.sagaweschaefer.flashcard.util.MenuUtils;
 
 import java.util.List;
 
-/**
- * CLI-Menü für den täglichen Lernplan.
- *
- * <p>Hängt nur von Application-UseCases und einem Domain-Service ab; kein
- * direkter Zugriff auf Adapter/Persistenz.</p>
- */
-@SuppressWarnings("unused") // Wird via MainMenu instanziiert und gestartet
+@SuppressWarnings("unused")
 public class DailyPlanMenu {
 
     private static final int PROGRESS_BAR_WIDTH = 30;
@@ -55,8 +49,6 @@ public class DailyPlanMenu {
     public void start() {
         menu.start();
     }
-
-    // --- Aktionen ---
 
     private void showProgress() {
         GetDailyProgressUseCase.Result result = getProgressUseCase.execute();
@@ -145,9 +137,8 @@ public class DailyPlanMenu {
         System.out.println("Empfehlung: Noch " + remaining + " Karten in 1-2 kurzen Blöcken.");
     }
 
-    /** Rendert einen ASCII-Fortschrittsbalken für ein Verhältnis 0..1. */
     static String renderProgressBar(double ratio) {
-        double clamped = Math.max(0.0, Math.min(1.0, ratio));
+        double clamped = Math.clamp(ratio, 0.0, 1.0);
         int filled = (int) Math.round(clamped * PROGRESS_BAR_WIDTH);
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < PROGRESS_BAR_WIDTH; i++) {

@@ -18,12 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * JSON-basierte Implementierung des {@link DailyGoalRepository}.
- *
- * <p>Speichert Goal und Tagesfortschritte gemeinsam in einer JSON-Datei.</p>
- */
-@SuppressWarnings("unused") // Wird via ApplicationContext instanziiert
+@SuppressWarnings("unused")
 public class JsonDailyGoalRepository implements DailyGoalRepository {
 
     private final String filePath;
@@ -102,7 +97,6 @@ public class JsonDailyGoalRepository implements DailyGoalRepository {
         }
     }
 
-    /** Internes Dateischema. */
     @JsonIgnoreProperties(ignoreUnknown = true)
     @SuppressWarnings("unused") // Felder werden via Reflection durch Jackson genutzt
     static class DailyGoalFile implements Serializable {
